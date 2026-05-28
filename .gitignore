@@ -1,0 +1,11 @@
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary local servers/build output
+*.log
+.cache/
+dist/
+node_modules/
