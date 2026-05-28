@@ -46,10 +46,22 @@ a { color: inherit; }
 }
 
 .hero {
-  min-height: 44vh;
+  min-height: 28vh;
   display: grid;
   align-content: center;
-  padding: clamp(32px, 6vw, 72px) 0;
+  padding: clamp(26px, 5vw, 52px) 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .eyebrow,
@@ -186,7 +198,7 @@ p {
   .shell { padding-top: 28px; }
   .project-feature,
   .cards { grid-template-columns: 1fr; }
-  .hero { min-height: 42vh; }
+  .hero { min-height: 28vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {
