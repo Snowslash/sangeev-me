@@ -9,3 +9,9 @@ Thumbs.db
 .cache/
 dist/
 node_modules/
+
+# local secrets / environment
+.env
+.env.*
+!.env.example
+!.env.sample
