@@ -182,10 +182,6 @@ p {
 
 .muted { color: var(--muted); font-weight: 700; }
 
-.research-panel {
-  max-width: 780px;
-}
-
 .site-footer {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
