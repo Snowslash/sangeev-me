@@ -10,6 +10,17 @@
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #171613;
+  --ink: #f0ede6;
+  --muted: #b7ad9d;
+  --rule: #5b5347;
+  --rule-strong: #746a5b;
+  --link: #8cc8ff;
+  --panel: #211f1a;
+}
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -49,6 +60,7 @@ a {
   text-decoration: none;
 }
 
+.site-nav-actions,
 .site-nav-links {
   display: flex;
   flex-wrap: wrap;
@@ -57,8 +69,26 @@ a {
   font-size: 0.96rem;
 }
 
+.site-nav-actions {
+  align-items: baseline;
+}
+
 .site-nav-links a {
   color: var(--link);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--link);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
 }
 
 .shell {
@@ -176,6 +206,7 @@ p {
     display: block;
   }
 
+  .site-nav-actions,
   .site-nav-links {
     justify-content: flex-start;
     margin-top: 10px;
