@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Sangeev's site for small clinical tools and coding projects." />
+    <meta name="description" content="Sangeev's small public hub for clinical tools and coding projects." />
     <meta name="theme-color" content="#171613" />
-    <meta property="og:title" content="Sangeev — clinical tools and coding projects" />
-    <meta property="og:description" content="Small tools and project pages by Sangeev." />
+    <meta property="og:title" content="Sangeev" />
+    <meta property="og:description" content="Small clinical tools and project pages by Sangeev." />
     <meta property="og:type" content="website" />
-    <title>Sangeev — clinical tools and coding projects</title>
+    <title>Sangeev</title>
     <link rel="canonical" href="https://sangeev.me/" />
-    <link rel="stylesheet" href="/styles.css?v=20260529-font1" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-plain1" />
     <script src="/theme.js?v=20260529-font1" defer></script>
   </head>
   <body>
@@ -21,57 +21,60 @@
           <a href="https://opnotes.sangeev.me">Op notes</a>
           <a href="https://scratchpad.sangeev.me">Scratchpad</a>
         </nav>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light mode" aria-pressed="true">
-        <span aria-hidden="true">☀</span><span>Light</span>
-      </button>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light mode" aria-pressed="true">
+          <span aria-hidden="true">☀</span><span>Light</span>
+        </button>
       </div>
     </header>
 
-    <main class="shell">
-      <section class="hero" aria-labelledby="hero-title">
-        <h1 id="hero-title" class="visually-hidden">Sangeev</h1>
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <h1 id="page-title">Sangeev</h1>
         <p class="lede">
-          Core surgical trainee in Wales. Small public pages for tools I build around
-          surgical training, ward work and side projects.
+          I am a core surgical trainee in Wales. This is a small public index for tools and project pages I use around surgical training, ward work and side projects.
         </p>
-        <nav class="quick-links" aria-label="Primary links">
-          <a href="https://opnotes.sangeev.me">Op notes</a>
-          <a href="https://scratchpad.sangeev.me">Scratchpad</a>
-          <a href="#projects">Projects</a>
-        </nav>
+        <p>
+          The clinical tools are deliberately plain: static pages where possible, no accounts, no analytics and no server-side patient data storage.
+        </p>
       </section>
 
-      <section class="panel project-feature" id="projects" aria-labelledby="projects-title">
-        <div>
-          <p class="section-kicker">Live tools</p>
-          <h2 id="projects-title">Useful prototypes</h2>
-          <p>
-            Static browser tools that load quickly on work computers. No accounts, no analytics,
-            no server-side patient data storage.
-          </p>
-        </div>
-        <div class="cards">
-          <article class="card accent">
-            <h3>Operative note generator</h3>
-            <p>
-              Started to avoid missing repetitive operation note fields.
-            </p>
-            <a class="card-link" href="https://opnotes.sangeev.me">Open</a>
+      <section class="section" id="projects" aria-labelledby="projects-title">
+        <h2 id="projects-title">Public tools</h2>
+        <p>
+          Things that are useful enough to keep reachable from a work computer.
+        </p>
+        <div class="project-list">
+          <article class="project-item">
+            <div>
+              <h3>Operative note generator</h3>
+              <p>
+                A browser form for drafting common emergency general-surgery operation notes. It produces plain text to check and edit before use.
+              </p>
+            </div>
+            <a class="project-link" href="https://opnotes.sangeev.me">Open</a>
           </article>
-          <article class="card">
-            <h3>Clinical scratchpad</h3>
-            <p>
-              Field-tested during surgical on-calls as a temporary job list.
-            </p>
-            <a class="card-link" href="https://scratchpad.sangeev.me">Open</a>
+          <article class="project-item">
+            <div>
+              <h3>Clinical scratchpad</h3>
+              <p>
+                A mobile-first scratchpad for temporary ward-job organisation during a shift. Not a medical record and not decision support.
+              </p>
+            </div>
+            <a class="project-link" href="https://scratchpad.sangeev.me">Open</a>
           </article>
         </div>
       </section>
 
+      <section class="section" aria-labelledby="notes-title">
+        <h2 id="notes-title">Notes</h2>
+        <p>
+          These are personal projects, not hospital systems or approved clinical products. Do not enter patient-identifiable information into public pages or repositories.
+        </p>
+      </section>
     </main>
 
-    <footer class="site-footer">
-      <p>© Sangeev · Built as a static site · Last updated 2026-05-28</p>
+    <footer>
+      <p>Maintained by Sangeev · Static site · Last updated 2026-05-30</p>
     </footer>
   </body>
 </html>

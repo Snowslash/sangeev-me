@@ -1,46 +1,68 @@
 :root {
   color-scheme: light;
-  --paper: #f7f4ee;
-  --ink: #181715;
-  --muted: #5f5a51;
-  --rule: #cfc7b7;
-  --rule-strong: #9f927d;
-  --link: #064f8c;
+  --bg: #f7f4ee;
   --panel: #fffdf8;
-  font-family: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --text: #181715;
+  --text-strong: #181715;
+  --text-muted: #5f5a51;
+  --border: #cfc7b7;
+  --border-strong: #9f927d;
+  --accent: #064f8c;
+  --accent-hover: #043d6d;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --paper: #171613;
-  --ink: #f0ede6;
-  --muted: #b7ad9d;
-  --rule: #5b5347;
-  --rule-strong: #746a5b;
-  --link: #8cc8ff;
+  --bg: #171613;
   --panel: #211f1a;
+  --text: #eee6d8;
+  --text-strong: #fff7e8;
+  --text-muted: #c8bdab;
+  --border: #5b5347;
+  --border-strong: #746a5b;
+  --accent: #9cc8ff;
+  --accent-hover: #c2ddff;
 }
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  min-height: 100%;
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--ink);
-  background: var(--paper);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+body,
+button {
+  font-family: var(--font-sans);
 }
 
 a {
-  color: var(--link);
+  color: var(--accent);
   text-underline-offset: 0.18em;
 }
 
+a:hover,
+a:focus-visible {
+  color: var(--accent-hover);
+}
+
 .site-nav,
-.shell,
-.site-footer {
-  width: min(760px, calc(100% - 32px));
+main,
+footer {
+  width: min(860px, calc(100% - 32px));
   margin: 0 auto;
 }
 
@@ -49,13 +71,12 @@ a {
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  padding: 28px 0 14px;
-  border-bottom: 1px solid var(--rule);
+  padding: 26px 0 14px;
+  border-bottom: 1px solid var(--border);
 }
 
 .site-nav-brand {
-  color: var(--ink);
-  font-size: 1.08rem;
+  color: var(--text-strong);
   font-weight: 700;
   text-decoration: none;
 }
@@ -64,17 +85,16 @@ a {
 .site-nav-links {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   justify-content: flex-end;
   gap: 14px;
-  font-size: 0.96rem;
+  font-size: 15px;
 }
 
-.site-nav-actions {
-  align-items: baseline;
-}
-
-.site-nav-links a {
-  color: var(--link);
+.site-nav-brand[aria-current="page"],
+.site-nav-links a[aria-current="page"] {
+  color: var(--text-strong);
+  font-weight: 700;
 }
 
 .theme-toggle {
@@ -84,122 +104,113 @@ a {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--link);
+  color: var(--accent);
   font: inherit;
   text-decoration: underline;
   text-underline-offset: 0.18em;
   cursor: pointer;
 }
 
-.shell {
-  padding: 42px 0 24px;
+main {
+  padding: 40px 0 24px;
 }
 
 .hero {
-  padding: 0 0 28px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  padding: 0 0 6px;
 }
 
 h1,
 h2,
 h3,
-p { margin-top: 0; }
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--text-strong);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  margin: 0 0 14px;
+  font-size: clamp(32px, 5vw, 46px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
 
 h2 {
-  margin-bottom: 10px;
-  font-size: 1.45rem;
-  line-height: 1.2;
+  margin: 24px 0 6px;
+  font-size: 18px;
+  line-height: 1.3;
 }
 
 h3 {
-  margin-bottom: 8px;
-  font-size: 1.05rem;
+  margin: 0 0 6px;
+  font-size: 17px;
+  line-height: 1.3;
 }
 
-p {
-  color: var(--muted);
+p,
+li {
+  color: var(--text-muted);
   line-height: 1.58;
 }
 
+p {
+  max-width: 72ch;
+  margin: 0 0 14px;
+}
+
 .lede {
-  max-width: 680px;
-  margin-bottom: 18px;
-  color: var(--ink);
-  font-size: clamp(1.35rem, 3vw, 2rem);
-  line-height: 1.26;
+  max-width: 650px;
+  color: var(--text-strong);
+  font-size: 18px;
 }
 
-.quick-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 18px;
+.section {
+  border-top: 1px solid var(--border);
+  padding: 22px 0 0;
+  margin-top: 24px;
 }
 
-.quick-links a,
-.card-link {
-  color: var(--link);
-  font-weight: 600;
+.project-list {
+  border-top: 1px solid var(--border);
+  margin-top: 18px;
 }
 
-.panel {
-  padding: 26px 0 0;
-}
-
-.project-feature {
-  display: block;
-  margin-bottom: 16px;
-}
-
-.section-kicker {
-  margin: 0 0 4px;
-  color: var(--muted);
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
-  margin-top: 20px;
-  border-top: 1px solid var(--rule);
-}
-
-.card {
+.project-item {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
   align-items: baseline;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
 }
 
-.card p { margin-bottom: 0; }
-.card-link { white-space: nowrap; }
-
-.site-footer {
-  padding: 18px 0 44px;
-  border-top: 1px solid var(--rule);
+.project-item p {
+  margin-bottom: 0;
 }
 
-.site-footer p {
+.project-link {
+  color: var(--accent);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  margin-top: 30px;
+  padding: 14px 0 44px;
+}
+
+footer p {
   margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 @media (max-width: 640px) {
@@ -213,11 +224,29 @@ p {
     margin-top: 10px;
   }
 
-  .shell { padding-top: 30px; }
+  main {
+    padding-top: 30px;
+  }
 
-  .card {
+  .project-item {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-nav,
+  main,
+  footer {
+    width: min(100% - 24px, 860px);
+  }
+
+  h1 {
+    font-size: 31px;
+  }
+
+  .lede {
+    font-size: 17px;
   }
 }
 
