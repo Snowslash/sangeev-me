@@ -122,6 +122,10 @@ main {
   padding: 0 0 24px;
 }
 
+.intro-grid {
+  display: block;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -136,6 +140,21 @@ main {
 
 .hero {
   padding: 0 0 6px;
+}
+
+.note-box {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 14px 16px;
+  margin: 12px 0 0;
+}
+
+.note-box h2 {
+  margin-top: 0;
+}
+
+.note-box p:last-child {
+  margin-bottom: 0;
 }
 
 h1,
@@ -236,12 +255,25 @@ footer p {
 
 @media (max-width: 640px) {
   main {
-    padding-top: 30px;
+    padding-top: 0;
   }
 
   .project-item {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+}
+
+@media (min-width: 860px) {
+  .intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 36%);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .note-box {
+    margin-top: 8px;
   }
 }
 

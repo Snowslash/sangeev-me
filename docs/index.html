@@ -10,8 +10,8 @@
     <meta property="og:type" content="website" />
     <title>Sangeev</title>
     <link rel="canonical" href="https://sangeev.me/" />
-    <link rel="stylesheet" href="/styles.css?v=20260530-nav5" />
-    <script src="/theme.js?v=20260530-nav5" defer></script>
+    <link rel="stylesheet" href="/styles.css?v=20260530-density1" />
+    <script src="/theme.js?v=20260530-density1" defer></script>
   </head>
   <body>
     <header class="site-nav" aria-label="Site navigation">
@@ -28,15 +28,24 @@
     </header>
 
     <main>
-      <section class="hero" aria-label="Sangeev public index">
-        <h1 id="page-title" class="visually-hidden">Sangeev</h1>
-        <p class="lede">
-          I am a core surgical trainee in Wales. This is a small public index for tools and project pages I use around surgical training, ward work and side projects.
-        </p>
-        <p>
-          The clinical tools are deliberately plain: static pages where possible, no accounts, no analytics and no server-side patient data storage.
-        </p>
-      </section>
+      <div class="intro-grid">
+        <section class="hero" aria-label="Sangeev public index">
+          <h1 id="page-title" class="visually-hidden">Sangeev</h1>
+          <p class="lede">
+            I am a core surgical trainee in Wales. This is a small public index for tools and project pages I use around surgical training, ward work and side projects.
+          </p>
+          <p>
+            The clinical tools are deliberately plain: static pages where possible, no accounts, no analytics and no server-side patient data storage.
+          </p>
+        </section>
+
+        <section class="note-box" aria-labelledby="notes-title">
+          <h2 id="notes-title">Notes</h2>
+          <p>
+            These are personal projects, not hospital systems or approved clinical products. Do not enter patient-identifiable information into public pages or repositories.
+          </p>
+        </section>
+      </div>
 
       <section class="section" id="projects" aria-labelledby="projects-title">
         <h2 id="projects-title">Public tools</h2>
@@ -63,13 +72,6 @@
             <a class="project-link" href="https://scratchpad.sangeev.me">Open</a>
           </article>
         </div>
-      </section>
-
-      <section class="section" aria-labelledby="notes-title">
-        <h2 id="notes-title">Notes</h2>
-        <p>
-          These are personal projects, not hospital systems or approved clinical products. Do not enter patient-identifiable information into public pages or repositories.
-        </p>
       </section>
     </main>
 
