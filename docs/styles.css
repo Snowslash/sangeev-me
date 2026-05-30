@@ -77,6 +77,7 @@ footer {
   padding: 0 0 12px;
   border-bottom: 1px solid var(--border);
   color: var(--text-muted);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Aptos", "Segoe UI", sans-serif;
   font-size: 14px;
 }
 
@@ -91,7 +92,6 @@ footer {
 .site-nav-links {
   display: inline-flex;
   flex-wrap: wrap;
-  align-items: baseline;
   justify-content: flex-start;
   gap: 8px 14px;
 }
@@ -230,6 +230,7 @@ footer {
 footer p {
   margin: 0;
   color: var(--text-muted);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Aptos", "Segoe UI", sans-serif;
   font-size: 14px;
 }
 
