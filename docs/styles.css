@@ -149,8 +149,14 @@ main {
 .note-box {
   border: 1px solid var(--warning-border);
   background: var(--warning-bg);
+  color: var(--text-strong);
   padding: 14px 16px;
   margin: 12px 0 0;
+}
+
+.note-box p,
+.note-box strong {
+  color: var(--text-strong);
 }
 
 .note-box h2 {

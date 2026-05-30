@@ -8,6 +8,7 @@ Run from the sangeev-me repo in the Hermes coding workspace:
 It checks:
 - each public repo has the byte-identical canonical token file;
 - required token declarations in each main stylesheet match the canonical light/dark values;
+- clinical/warning boxes use canonical warning tokens and strong text colour;
 - HTML links include the canonical token stylesheet before the site stylesheet.
 """
 
@@ -79,6 +80,37 @@ ALIASES = {
 
 BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]+)\}", re.S)
 DECL_RE = re.compile(r"(--[\w-]+)\s*:\s*([^;]+);")
+PROP_RE = re.compile(r"([\w-]+)\s*:\s*([^;]+);")
+
+WARNING_RULES = {
+    "sangeev.me": {
+        ".note-box": {
+            "background": "var(--warning-bg)",
+            "border": "1px solid var(--warning-border)",
+            "color": "var(--text-strong)",
+        },
+        ".note-box p": {"color": "var(--text-strong)"},
+        ".note-box strong": {"color": "var(--text-strong)"},
+    },
+    "scratchpad": {
+        ".notice": {
+            "background": "var(--warning-bg)",
+            "border": "1px solid var(--warning-border)",
+            "color": "var(--text-strong)",
+        },
+        ".notice p": {"color": "var(--text-strong)"},
+        ".notice strong": {"color": "var(--text-strong)"},
+    },
+    "opnotes": {
+        ".landing-safety": {
+            "background": "var(--warning-bg)",
+            "border": "1px solid var(--warning-border)",
+            "color": "var(--text-strong)",
+        },
+        ".landing-safety p": {"color": "var(--text-strong)"},
+        ".landing-safety strong": {"color": "var(--text-strong)"},
+    },
+}
 
 
 def strip_comments(css: str) -> str:
@@ -95,6 +127,38 @@ def theme_for_selector(selector: str) -> str | None:
     if ".app-body" in selector or ".landing-body" in selector:
         return "light"
     return None
+
+
+def normalise_value(value: str) -> str:
+    return re.sub(r"\s+", " ", value.strip()).lower()
+
+
+def selector_parts(selector: str) -> set[str]:
+    return {part.strip() for part in selector.split(",")}
+
+
+def declarations_for_selector(css: str, target: str) -> dict[str, str]:
+    declarations: dict[str, str] = {}
+    for selector, body in BLOCK_RE.findall(css):
+        if target in selector_parts(selector):
+            declarations.update({name: value.strip() for name, value in PROP_RE.findall(body)})
+    return declarations
+
+
+def check_warning_rules(site: str, css: str, rel: Path, failures: list[str]) -> None:
+    for selector, expected_props in WARNING_RULES.get(site, {}).items():
+        actual = declarations_for_selector(css, selector)
+        if not actual:
+            failures.append(f"{site}: {rel} missing warning selector {selector}")
+            continue
+        for prop, expected in expected_props.items():
+            actual_value = actual.get(prop)
+            if actual_value is None:
+                failures.append(f"{site}: {rel} {selector} missing {prop}: {expected}")
+            elif normalise_value(actual_value) != normalise_value(expected):
+                failures.append(
+                    f"{site}: {rel} {selector} {prop}={actual_value} expected {expected}"
+                )
 
 
 def check_html_order(site: str, repo: Path, failures: list[str]) -> None:
@@ -140,6 +204,7 @@ def main() -> int:
                         f"{site}: {rel} {selector.strip()} {name}={value} expected {expected[name]}"
                     )
 
+        check_warning_rules(site, css, style_path.relative_to(repo), failures)
         check_html_order(site, repo, failures)
 
     if failures:
