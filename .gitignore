@@ -15,3 +15,8 @@ node_modules/
 .env.*
 !.env.example
 !.env.sample
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
