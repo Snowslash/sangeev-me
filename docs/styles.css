@@ -9,6 +9,8 @@
   --border-strong: #9f927d;
   --accent: #184f6a;
   --accent-hover: #113b50;
+  --warning-bg: #fff4d8;
+  --warning-border: #d7b86d;
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-serif: ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
@@ -25,6 +27,8 @@
   --border-strong: #746a5b;
   --accent: #9fc7d7;
   --accent-hover: #c0deea;
+  --warning-bg: #2e2208;
+  --warning-border: #7c5d19;
 }
 
 * { box-sizing: border-box; }
@@ -143,8 +147,8 @@ main {
 }
 
 .note-box {
-  border: 1px solid var(--border);
-  background: var(--panel);
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
   padding: 14px 16px;
   margin: 12px 0 0;
 }
