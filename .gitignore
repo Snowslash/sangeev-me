@@ -15,3 +15,12 @@ node_modules/
 .env.*
 !.env.example
 !.env.sample
+
+# secret/certificate material
+*.pem
+*.p12
+*.pfx
+*.key
+secrets/
+credentials/
+*.local

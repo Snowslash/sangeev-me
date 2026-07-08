@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-GB" data-theme="dark">
+<html lang="en-GB" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,8 +10,8 @@
     <meta property="og:type" content="website" />
     <title>Sangeev</title>
     <link rel="canonical" href="https://sangeev.me/" />
-    <link rel="stylesheet" href="/sangeev-public-tokens.css?v=20260531-warningtext1" />
-    <link rel="stylesheet" href="/styles.css?v=20260531-warningtext1" />
+    <link rel="stylesheet" href="/sangeev-public-tokens.css?v=20260708-od1" />
+    <link rel="stylesheet" href="/styles.css?v=20260708-feedback1" />
     <script src="/theme.js?v=20260604-cookie1" defer></script>
   </head>
   <body>
@@ -23,8 +23,8 @@
         <span aria-hidden="true">/</span>
         <a href="https://scratchpad.sangeev.me">Scratchpad</a>
       </nav>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to light mode" aria-pressed="true">
-        <span aria-hidden="true">☀</span><span>Light</span>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode" aria-pressed="false">
+        <span aria-hidden="true">☾</span><span>Dark</span>
       </button>
     </header>
 
@@ -48,14 +48,14 @@
       </div>
 
       <section class="section" id="projects" aria-labelledby="projects-title">
-        <h2 id="projects-title">Public tools</h2>
+        <h2 id="projects-title" class="section-title-accent">Public tools</h2>
         <p>
           Things that are useful enough to keep reachable from a work computer.
         </p>
         <div class="project-list">
           <article class="project-item">
             <div>
-              <h3>Operative note generator</h3>
+              <h3>Operation note generator</h3>
               <p>
                 A browser form for drafting common emergency general-surgery operation notes. It produces plain text to check and edit before use.
               </p>
@@ -70,6 +70,16 @@
               </p>
             </div>
             <a class="project-link" href="https://scratchpad.sangeev.me">Open</a>
+          </article>
+
+          <article class="project-item">
+            <div>
+              <h3>Chess Coach</h3>
+              <p>
+                Local-first chess analysis using Stockfish and optional Maia context. PGNs and generated reports stay on the user's machine.
+              </p>
+            </div>
+            <a class="project-link" href="https://github.com/Snowslash/chess-coach">Source</a>
           </article>
         </div>
       </section>
