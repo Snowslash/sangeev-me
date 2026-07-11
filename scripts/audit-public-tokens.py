@@ -9,7 +9,8 @@ It checks:
 - each public repo has the byte-identical canonical token file;
 - required token declarations in each main stylesheet match the canonical light/dark values;
 - clinical/warning boxes use canonical warning tokens and strong text colour;
-- HTML links include the canonical token stylesheet before the site stylesheet.
+- HTML links include the canonical token stylesheet before the site stylesheet;
+- React public frontends use byte-identical theme-toggle CSS and the same icon/label markup contract.
 """
 
 from __future__ import annotations
@@ -26,6 +27,47 @@ SITES = {
     "scratchpad": WORKSPACE / "clinical-shift-scratchpad",
     "opnotes": WORKSPACE / "Op note gen",
 }
+
+THEME_CONTROLS = {
+    "sangeev.me": (
+        WORKSPACE / "sangeev-me/src/styles/theme-toggle.css",
+        WORKSPACE / "sangeev-me/src/components/ThemeToggle.tsx",
+    ),
+    "scratchpad": (
+        WORKSPACE / "clinical-shift-scratchpad/landing/src/styles/theme-toggle.css",
+        WORKSPACE / "clinical-shift-scratchpad/landing/src/components/ThemeToggle.tsx",
+    ),
+    "opnotes-v2": (
+        WORKSPACE / "op-note-gen-v2/src/styles/theme-toggle.css",
+        WORKSPACE / "op-note-gen-v2/src/components/ThemeToggle.tsx",
+    ),
+    "aligned": (
+        WORKSPACE / "AlignEd-public-clean/src/styles/theme-toggle.css",
+        WORKSPACE / "AlignEd-public-clean/src/components/ThemeToggle.tsx",
+    ),
+}
+
+THEME_STATE_FILES = {
+    "sangeev.me": WORKSPACE / "sangeev-me/src/lib/theme.ts",
+    "scratchpad": WORKSPACE / "clinical-shift-scratchpad/landing/src/lib/theme.ts",
+    "opnotes-v2": WORKSPACE / "op-note-gen-v2/src/app/theme.ts",
+    "aligned": WORKSPACE / "AlignEd-public-clean/src/theme.ts",
+}
+
+THEME_STATE_MARKERS = (
+    "sangeevSiteTheme",
+    "Domain=.sangeev.me",
+    "SameSite=Lax",
+)
+
+THEME_MARKUP_CONTRACT = (
+    'className="theme-toggle"',
+    'aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}',
+    'aria-pressed={isDark}',
+    '<Sun aria-hidden="true" size={15} />',
+    '<Moon aria-hidden="true" size={15} />',
+    '<span>{isDark ? "Light" : "Dark"}</span>',
+)
 
 TOKEN_FILE = "docs/sangeev-public-tokens.css"
 STYLE_FILE = "docs/styles.css"
@@ -84,22 +126,22 @@ PROP_RE = re.compile(r"([\w-]+)\s*:\s*([^;]+);")
 
 WARNING_RULES = {
     "sangeev.me": {
-        ".note-box": {
+        ".boundary": {
             "background": "var(--warning-bg)",
             "border": "1px solid var(--warning-border)",
             "color": "var(--text-strong)",
         },
-        ".note-box p": {"color": "var(--text-strong)"},
-        ".note-box strong": {"color": "var(--text-strong)"},
+        ".boundary p": {"color": "var(--text-strong)"},
+        ".boundary strong": {"color": "var(--text-strong)"},
     },
     "scratchpad": {
-        ".notice": {
+        ".boundary": {
             "background": "var(--warning-bg)",
             "border": "1px solid var(--warning-border)",
             "color": "var(--text-strong)",
         },
-        ".notice p": {"color": "var(--text-strong)"},
-        ".notice strong": {"color": "var(--text-strong)"},
+        ".boundary p": {"color": "var(--text-strong)"},
+        ".boundary strong": {"color": "var(--text-strong)"},
     },
     "opnotes": {
         ".landing-safety": {
@@ -206,6 +248,30 @@ def main() -> int:
 
         check_warning_rules(site, css, style_path.relative_to(repo), failures)
         check_html_order(site, repo, failures)
+
+    canonical_control_css = THEME_CONTROLS["sangeev.me"][0].read_text()
+    for site, (css_path, component_path) in THEME_CONTROLS.items():
+        if not css_path.exists():
+            failures.append(f"{site}: missing shared theme control CSS {css_path}")
+            continue
+        if css_path.read_text() != canonical_control_css:
+            failures.append(f"{site}: theme control CSS differs from sangeev.me canonical file")
+        if not component_path.exists():
+            failures.append(f"{site}: missing ThemeToggle component {component_path}")
+            continue
+        component = component_path.read_text()
+        for marker in THEME_MARKUP_CONTRACT:
+            if marker not in component:
+                failures.append(f"{site}: ThemeToggle missing markup contract marker {marker}")
+
+    for site, theme_path in THEME_STATE_FILES.items():
+        if not theme_path.exists():
+            failures.append(f"{site}: missing theme state module {theme_path}")
+            continue
+        theme_source = theme_path.read_text()
+        for marker in THEME_STATE_MARKERS:
+            if marker not in theme_source:
+                failures.append(f"{site}: theme state module missing estate persistence marker {marker}")
 
     if failures:
         print("Public token audit FAILED:\n")

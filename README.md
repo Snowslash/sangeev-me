@@ -1,6 +1,6 @@
 # sangeev.me
 
-Static public project hub for Sangeev’s small clinical tools and coding projects.
+Static React project hub for Sangeev’s small clinical tools and coding projects.
 
 Live site: https://sangeev.me
 Source: https://github.com/Snowslash/sangeev-me
@@ -19,32 +19,39 @@ Important clinical workflow tools are kept in separate repositories/deployments 
 ```bash
 git clone https://github.com/Snowslash/sangeev-me.git
 cd sangeev-me
-python3 -m http.server 8000 --directory docs
+npm install
+npm run dev
 ```
 
-Then open:
+Then open the local URL printed by Vite, normally:
 
 ```text
-http://127.0.0.1:8000/
+http://127.0.0.1:5173/
 ```
 
-No build step is required.
+Production build and checks:
+
+```bash
+npm run check
+```
 
 ## Project layout
 
-- `docs/index.html` — homepage
-- `docs/styles.css` — homepage styling
-- `docs/sangeev-public-tokens.css` — shared visual tokens for the public estate
-- `docs/theme.js` — local theme toggle
-- `docs/_headers` — Cloudflare Pages security headers
+- `src/App.tsx` — homepage content and components
+- `src/styles.css` — Tailwind entrypoint and public-estate styling
+- `src/lib/theme.ts` — shared local/cookie theme persistence
+- `src/styles/theme-toggle.css` — canonical public-estate theme control styling; the token audit checks byte-identical copies and shared persistence markers in Scratchpad, Op Notes v2 and AlignEd
+- `public/sangeev-public-tokens.css` — canonical public-estate tokens copied into the build
+- `public/_headers` — Cloudflare Pages security headers copied into the build
+- `docs/` — generated production output
 - `scripts/audit-public-tokens.py` — cross-repo token consistency check when sibling repos are present
 
 ## Deployment
 
-Recommended deployment: Cloudflare Pages, no build step.
+Recommended deployment: Cloudflare Pages with the checked-in production build.
 
 - Framework preset: None
-- Build command: blank
+- Build command: `npm run build`
 - Build output directory: `docs`
 - Production branch: `main`
 - Custom domains: `sangeev.me` and `www.sangeev.me`

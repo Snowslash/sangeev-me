@@ -9,6 +9,7 @@ Thumbs.db
 .cache/
 dist/
 node_modules/
+*.tsbuildinfo
 
 # local secrets / environment
 .env

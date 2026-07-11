@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import "./styles/theme-toggle.css";
+
+@theme {
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: ui-serif, Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { min-height: 100%; scroll-behavior: smooth; background: var(--bg); }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 16px; line-height: 1.6; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-underline-offset: 0.2em; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.site-shell { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+.site-header { min-height: 76px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 28px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.wordmark { justify-self: start; color: var(--text-strong); font-family: var(--font-serif); font-size: 20px; font-weight: 600; text-decoration: none; }
+.site-header nav { display: flex; align-items: center; gap: 24px; color: var(--text-muted); }
+.site-header nav a { text-decoration: none; }
+.site-header nav a:hover { color: var(--accent); }
+
+main { padding: 0 0 72px; }
+.hero { min-height: 430px; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr); align-items: center; gap: clamp(48px, 9vw, 120px); border-bottom: 1px solid var(--border); padding: 58px 0; }
+.hero-copy { max-width: 720px; }
+h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { color: var(--text-strong); font-family: var(--font-serif); font-weight: 500; letter-spacing: -0.02em; }
+h1 { max-width: 18ch; margin-bottom: 20px; color: var(--accent); font-size: clamp(38px, 4.5vw, 56px); line-height: 1.06; text-wrap: balance; }
+.lede { max-width: 60ch; margin: 0; color: var(--text-muted); font-size: clamp(18px, 2vw, 21px); line-height: 1.55; }
+.hero-links { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
+.hero-links a, .tool-link, .workbench-item > a { display: inline-flex; align-items: center; gap: 8px; color: var(--text-strong); font-weight: 650; text-decoration: none; }
+.hero-links a:first-child { color: var(--accent); }
+.hero-links a:hover, .tool-link:hover, .workbench-item > a:hover { color: var(--accent); }
+.boundary { align-self: end; margin-bottom: 10px; border: 1px solid var(--warning-border); border-top: 3px solid var(--accent); background: var(--warning-bg); color: var(--text-strong); padding: 22px 18px 18px; }
+.boundary p { margin-bottom: 12px; color: var(--text-strong); font-size: 14px; line-height: 1.55; }
+.boundary p:last-child { margin-bottom: 0; }
+.boundary strong { color: var(--text-strong); font-weight: 650; }
+
+.tools-section { padding: 64px 0 58px; border-bottom: 1px solid var(--border); }
+.section-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 0.55fr); gap: 48px; align-items: end; margin-bottom: 30px; }
+.section-heading h2, .workbench h2 { margin: 0; color: var(--accent); font-size: clamp(27px, 3vw, 36px); line-height: 1.12; }
+.section-heading > p { margin: 0; color: var(--text-muted); font-size: 15px; }
+.tool-list { border-top: 1px solid var(--border); }
+.tool-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: start; padding: 30px 0; border-bottom: 1px solid var(--border); }
+.tool-card h3 { margin: 0 0 9px; font-size: clamp(23px, 2.6vw, 30px); line-height: 1.12; }
+.tool-description { max-width: 62ch; margin: 0 0 8px; color: var(--text-strong); font-size: 17px; }
+.tool-detail { max-width: 66ch; margin: 0; color: var(--text-muted); font-size: 14px; }
+.tool-link { margin-top: 33px; white-space: nowrap; }
+
+.workbench { padding: 58px 0; border-bottom: 1px solid var(--border); }
+.workbench-heading { margin-bottom: 28px; }
+.workbench-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: end; border-top: 1px solid var(--border); padding-top: 30px; }
+.workbench-item h3 { margin: 0; font-size: clamp(23px, 2.6vw, 30px); }
+.workbench-item p { max-width: 68ch; margin: 10px 0 0; color: var(--text-muted); }
+footer { display: flex; justify-content: space-between; gap: 24px; padding: 22px 0 42px; color: var(--text-muted); font-size: 13px; }
+footer p { margin: 0; }
+
+@media (max-width: 760px) {
+  .site-shell { width: min(100% - 28px, 680px); }
+  .site-header { grid-template-columns: 1fr auto; min-height: 64px; gap: 16px; }
+  .site-header nav { display: none; }
+  .hero { min-height: auto; grid-template-columns: 1fr; gap: 40px; padding: 48px 0 44px; }
+  h1 { font-size: clamp(36px, 10vw, 46px); }
+  .boundary { align-self: auto; margin: 0; }
+  .tools-section { padding: 48px 0 44px; }
+  .section-heading { grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+  .tool-card { grid-template-columns: 1fr; gap: 10px; padding: 26px 0; }
+  .tool-link { margin-top: 6px; }
+  .workbench { padding: 44px 0; }
+  .workbench-item { grid-template-columns: 1fr; gap: 18px; }
+  footer { flex-direction: column; gap: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
