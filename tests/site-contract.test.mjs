@@ -15,10 +15,13 @@ test('homepage uses the typed Vite React entrypoint', () => {
 
 test('homepage keeps a plain public tools and workbench structure', () => {
   const app = read('../src/App.tsx');
+  const headerStyles = read('../src/styles/public-estate-header.css');
 
   assert.match(app, /<h1 id="page-title">Building small, practical tools\.<\/h1>/);
   assert.match(app, /<h2 id="tools-title">Public tools<\/h2>/);
   assert.match(app, /<h2 id="workbench-title">Workbench<\/h2>/);
+  assert.match(app, /<PublicEstateHeader current="home"/);
+  assert.doesNotMatch(headerStyles, /\.site-header nav \{\s*display: none;/, 'primary navigation must remain available on mobile');
   assert.match(app, /Operation note generator/);
   assert.match(app, /Clinical Shift Scratchpad/);
   assert.match(app, /AlignEd/);
@@ -34,7 +37,7 @@ test('homepage has a persistent theme control and no manual stale date', () => {
   const app = read('../src/App.tsx');
   const theme = read('../src/lib/theme.ts');
 
-  assert.match(app, /ThemeToggle/);
+  assert.match(app, /PublicEstateHeader/);
   assert.match(theme, /sangeevSiteTheme/);
   assert.match(theme, /Domain=\.sangeev\.me/);
   assert.ok(theme.indexOf('const cookie = readCookie()') < theme.indexOf('window.localStorage.getItem'), 'cross-subdomain cookie should take precedence over stale origin storage');

@@ -1,5 +1,5 @@
 import { ArrowUpRight, Github } from "lucide-react";
-import { ThemeToggle } from "./components/ThemeToggle";
+import { PublicEstateHeader } from "./components/PublicEstateHeader";
 import { useTheme } from "./lib/theme";
 
 type Tool = {
@@ -39,15 +39,7 @@ function App() {
 
   return (
     <div className="site-shell">
-      <header className="site-header">
-        <a className="wordmark" href="https://sangeev.me" aria-current="page">Sangeev</a>
-        <nav aria-label="Primary navigation">
-          <a href="#tools">Tools</a>
-          <a href="https://opnotes.sangeev.me">Op notes</a>
-          <a href="https://scratchpad.sangeev.me">Scratchpad</a>
-        </nav>
-        <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      </header>
+      <PublicEstateHeader current="home" theme={theme} onToggleTheme={toggleTheme} />
 
       <main>
         <section className="hero" aria-labelledby="page-title">

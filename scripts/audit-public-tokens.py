@@ -10,7 +10,7 @@ It checks:
 - required token declarations in each main stylesheet match the canonical light/dark values;
 - clinical/warning boxes use canonical warning tokens and strong text colour;
 - HTML links include the canonical token stylesheet before the site stylesheet;
-- React public frontends use byte-identical theme-toggle CSS and the same icon/label markup contract.
+- React public frontends use byte-identical public-estate header and theme-toggle CSS plus the same markup contracts.
 """
 
 from __future__ import annotations
@@ -27,6 +27,37 @@ SITES = {
     "scratchpad": WORKSPACE / "clinical-shift-scratchpad",
     "opnotes": WORKSPACE / "Op note gen",
 }
+
+HEADER_CONTROLS = {
+    "sangeev.me": (
+        WORKSPACE / "sangeev-me/src/styles/public-estate-header.css",
+        WORKSPACE / "sangeev-me/src/components/PublicEstateHeader.tsx",
+    ),
+    "scratchpad": (
+        WORKSPACE / "clinical-shift-scratchpad/landing/src/styles/public-estate-header.css",
+        WORKSPACE / "clinical-shift-scratchpad/landing/src/components/PublicEstateHeader.tsx",
+    ),
+    "opnotes-v2": (
+        WORKSPACE / "op-note-gen-v2/src/styles/public-estate-header.css",
+        WORKSPACE / "op-note-gen-v2/src/components/PublicEstateHeader.tsx",
+    ),
+    "aligned": (
+        WORKSPACE / "AlignEd-public-clean/src/styles/public-estate-header.css",
+        WORKSPACE / "AlignEd-public-clean/src/components/PublicEstateHeader.tsx",
+    ),
+}
+
+HEADER_MARKUP_CONTRACT = (
+    'className="site-header"',
+    'data-print-hidden',
+    'className="wordmark"',
+    'aria-label="Primary navigation"',
+    'https://sangeev.me/#tools',
+    'https://opnotes.sangeev.me',
+    'https://scratchpad.sangeev.me',
+    'https://aligned.sangeev.me',
+    '<ThemeToggle theme={theme} onToggle={onToggleTheme} />',
+)
 
 THEME_CONTROLS = {
     "sangeev.me": (
@@ -248,6 +279,21 @@ def main() -> int:
 
         check_warning_rules(site, css, style_path.relative_to(repo), failures)
         check_html_order(site, repo, failures)
+
+    canonical_header_css = HEADER_CONTROLS["sangeev.me"][0].read_text()
+    for site, (css_path, component_path) in HEADER_CONTROLS.items():
+        if not css_path.exists():
+            failures.append(f"{site}: missing shared public-estate header CSS {css_path}")
+            continue
+        if css_path.read_text() != canonical_header_css:
+            failures.append(f"{site}: public-estate header CSS differs from sangeev.me canonical file")
+        if not component_path.exists():
+            failures.append(f"{site}: missing PublicEstateHeader component {component_path}")
+            continue
+        component = component_path.read_text()
+        for marker in HEADER_MARKUP_CONTRACT:
+            if marker not in component:
+                failures.append(f"{site}: PublicEstateHeader missing markup contract marker {marker}")
 
     canonical_control_css = THEME_CONTROLS["sangeev.me"][0].read_text()
     for site, (css_path, component_path) in THEME_CONTROLS.items():

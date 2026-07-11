@@ -40,7 +40,8 @@ npm run check
 - `src/App.tsx` — homepage content and components
 - `src/styles.css` — Tailwind entrypoint and public-estate styling
 - `src/lib/theme.ts` — shared local/cookie theme persistence
-- `src/styles/theme-toggle.css` — canonical public-estate theme control styling; the token audit checks byte-identical copies and shared persistence markers in Scratchpad, Op Notes v2 and AlignEd
+- `src/styles/public-estate-header.css` — canonical header/navigation styling shared across hosted tools
+- `src/styles/theme-toggle.css` — canonical public-estate theme control styling; the token audit checks byte-identical header/control copies and shared persistence markers in Scratchpad, Op Notes v2 and AlignEd
 - `public/sangeev-public-tokens.css` — canonical public-estate tokens copied into the build
 - `public/_headers` — Cloudflare Pages security headers copied into the build
 - `docs/` — generated production output
