@@ -102,7 +102,12 @@ THEME_MARKUP_CONTRACT = (
 
 TOKEN_FILE = "docs/sangeev-public-tokens.css"
 STYLE_FILE = "docs/styles.css"
+STYLE_GLOBS = {
+    "sangeev.me": "docs/assets/*.css",
+    "scratchpad": "docs/assets/*.css",
+}
 HTML_GLOB = "docs/*.html"
+STYLESHEET_RE = re.compile(r'href="([^"]+\.css)"')
 
 CANONICAL = {
     "light": {
@@ -234,17 +239,35 @@ def check_warning_rules(site: str, css: str, rel: Path, failures: list[str]) -> 
                 )
 
 
+def find_style_path(site: str, repo: Path, failures: list[str]) -> Path | None:
+    pattern = STYLE_GLOBS.get(site)
+    if pattern is None:
+        path = repo / STYLE_FILE
+        if not path.exists():
+            failures.append(f"{site}: missing {STYLE_FILE}")
+            return None
+        return path
+
+    candidates = sorted(repo.glob(pattern))
+    if len(candidates) != 1:
+        failures.append(f"{site}: expected one built app stylesheet matching {pattern}, found {len(candidates)}")
+        return None
+    return candidates[0]
+
+
 def check_html_order(site: str, repo: Path, failures: list[str]) -> None:
     for html in sorted(repo.glob(HTML_GLOB)):
         text = html.read_text()
-        if "styles.css" not in text:
+        stylesheet_hrefs = STYLESHEET_RE.findall(text)
+        app_styles = [href for href in stylesheet_hrefs if not href.endswith("sangeev-public-tokens.css")]
+        if not app_styles:
             continue
         token_pos = text.find("sangeev-public-tokens.css")
-        style_pos = text.find("styles.css")
+        style_pos = text.find(app_styles[0])
         if token_pos == -1:
             failures.append(f"{site}: {html.relative_to(repo)} does not load sangeev-public-tokens.css")
         elif token_pos > style_pos:
-            failures.append(f"{site}: {html.relative_to(repo)} loads tokens after styles.css")
+            failures.append(f"{site}: {html.relative_to(repo)} loads tokens after the app stylesheet")
 
 
 def main() -> int:
@@ -253,14 +276,13 @@ def main() -> int:
 
     for site, repo in SITES.items():
         token_path = repo / TOKEN_FILE
-        style_path = repo / STYLE_FILE
+        style_path = find_style_path(site, repo, failures)
         if not token_path.exists():
             failures.append(f"{site}: missing {TOKEN_FILE}")
             continue
         if token_path.read_text() != canonical_text:
             failures.append(f"{site}: {TOKEN_FILE} differs from sangeev.me canonical file")
-        if not style_path.exists():
-            failures.append(f"{site}: missing {STYLE_FILE}")
+        if style_path is None:
             continue
 
         css = strip_comments(style_path.read_text())
