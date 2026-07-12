@@ -10,6 +10,7 @@ test('homepage uses the typed Vite React entrypoint', () => {
   const vite = read('../vite.config.ts');
 
   assert.equal(packageJson.scripts.build, 'tsc -b && vite build');
+  assert.ok(vite.includes('base: "./"'));
   assert.ok(vite.includes('assetFileNames: "assets/[name]-[hash][extname]"'));
   assert.doesNotMatch(vite, /\? "styles\.css"/);
   assert.match(html, /src="\/src\/main\.tsx"/);
