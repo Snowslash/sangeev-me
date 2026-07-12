@@ -38,10 +38,10 @@ function App() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="site-shell">
+    <>
       <PublicEstateHeader current="home" theme={theme} onToggleTheme={toggleTheme} />
-
-      <main>
+      <div className="site-shell">
+        <main>
         <section className="hero" aria-labelledby="page-title">
           <div className="hero-copy">
             <h1 id="page-title">Building small, practical tools.</h1>
@@ -98,8 +98,9 @@ function App() {
       <footer>
         <p>Sangeev · Surgery, software and small useful things.</p>
         <p>No analytics. No tracking.</p>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }
 

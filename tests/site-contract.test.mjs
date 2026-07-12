@@ -20,7 +20,11 @@ test('homepage keeps a plain public tools and workbench structure', () => {
   assert.match(app, /<h1 id="page-title">Building small, practical tools\.<\/h1>/);
   assert.match(app, /<h2 id="tools-title">Public tools<\/h2>/);
   assert.match(app, /<h2 id="workbench-title">Workbench<\/h2>/);
-  assert.match(app, /<PublicEstateHeader current="home"/);
+  assert.match(app, /<>\s*<PublicEstateHeader current="home"[\s\S]*?<div className="site-shell">/, 'header must sit outside the page-specific content shell');
+  assert.match(headerStyles, /width: min\(1160px, calc\(100% - 40px\)\)/);
+  assert.match(headerStyles, /font-family: Charter, Cambria, Georgia, serif/);
+  assert.match(headerStyles, /\.wordmark[\s\S]*?line-height: 1\.2/);
+  assert.match(headerStyles, /\.site-header nav[\s\S]*?line-height: 1\.5/);
   assert.doesNotMatch(headerStyles, /\.site-header nav \{\s*display: none;/, 'primary navigation must remain available on mobile');
   assert.match(app, /Operation note generator/);
   assert.match(app, /Clinical Shift Scratchpad/);
