@@ -25,3 +25,8 @@ node_modules/
 secrets/
 credentials/
 *.local
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
