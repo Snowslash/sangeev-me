@@ -42,8 +42,8 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         name: "Operation note generator",
         description: "Structured drafts for common emergency general-surgery operation notes.",
         href: "https://opnotes.sangeev.me",
-        action: "Open tool",
-        ariaLabel: "Open Operation note generator",
+        action: "View project",
+        ariaLabel: "View Operation note generator",
         evidence: {
           src: opnotesEvidence,
           width: 960,
@@ -68,8 +68,8 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         name: "AlignEd",
         description: "Local-first teaching evidence and portfolio exports.",
         href: "https://aligned.sangeev.me",
-        action: "Open tool",
-        ariaLabel: "Open AlignEd",
+        action: "View project",
+        ariaLabel: "View AlignEd",
         evidence: {
           src: alignedEvidence,
           width: 960,

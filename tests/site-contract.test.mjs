@@ -98,6 +98,11 @@ test('homepage implements the approved stateful evidence-window project register
   assert.doesNotMatch(app, /Boundary|Each tool states its local boundary|No analytics\. No tracking\./);
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
+  assert.equal(app.match(/action: "View project"/g)?.length, 3);
+  assert.match(app, /ariaLabel: "View Operation note generator"/);
+  assert.match(app, /ariaLabel: "View AlignEd"/);
+  assert.doesNotMatch(app, /action: "Open tool"|ariaLabel: "Open (?:Operation note generator|AlignEd)"/);
+  assert.doesNotMatch(app, /https:\/\/(?:opnotes|aligned)\.sangeev\.me\/app\//);
   assert.doesNotMatch(app, /tool-card|hero-boundary|workbench-item|Public tools|eyebrow|tool-kind|tool-number|Useful enough to keep within reach|Also on the workbench|The clinical tools stay separate/);
   assert.match(app, /<p>Maintained by Sangeev<\/p>/);
   assert.doesNotMatch(app, /Sangeev · Surgery, software and small useful things\.|No analytics\. No tracking\./);
