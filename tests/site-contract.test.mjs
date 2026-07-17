@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const fontLicenses = ['OFL-Atkinson-Hyperlegible-Next.txt', 'OFL-Literata.txt'];
 
 test('homepage uses the typed Vite React entrypoint', () => {
   const packageJson = JSON.parse(read('../package.json'));
@@ -15,21 +16,47 @@ test('homepage uses the typed Vite React entrypoint', () => {
   assert.doesNotMatch(vite, /\? "styles\.css"/);
   assert.match(html, /src="\/src\/main\.tsx"/);
   assert.match(html, /id="root"/);
+  assert.doesNotMatch(html, /sangeev-public-tokens\.css/);
+  for (const license of fontLicenses) {
+    const source = new URL(`../public/licenses/${license}`, import.meta.url);
+    const deployed = new URL(`../docs/licenses/${license}`, import.meta.url);
+    const canonical = new URL(`../node_modules/@sangeev/estate-ui/LICENSES/${license}`, import.meta.url);
+    assert.equal(readFileSync(source, 'utf8'), readFileSync(canonical, 'utf8'), `source font licence drift: ${license}`);
+    assert.equal(readFileSync(deployed, 'utf8'), readFileSync(canonical, 'utf8'), `deployed font licence drift: ${license}`);
+  }
 });
 
-test('homepage keeps a plain public tools and workbench structure', () => {
+test('homepage implements the approved stateful evidence-window project register', () => {
   const app = read('../src/App.tsx');
-  const headerStyles = read('../src/styles/public-estate-header.css');
+  const styles = read('../src/styles.css');
+  const packageJson = JSON.parse(read('../package.json'));
 
-  assert.match(app, /<h1 id="page-title">Building small, practical tools\.<\/h1>/);
-  assert.match(app, /<h2 id="tools-title">Public tools<\/h2>/);
-  assert.match(app, /<h2 id="workbench-title">Workbench<\/h2>/);
-  assert.match(app, /<>\s*<PublicEstateHeader current="home"[\s\S]*?<div className="site-shell">/, 'header must sit outside the page-specific content shell');
-  assert.match(headerStyles, /width: min\(1160px, calc\(100% - 40px\)\)/);
-  assert.match(headerStyles, /font-family: Charter, Cambria, Georgia, serif/);
-  assert.match(headerStyles, /\.wordmark[\s\S]*?line-height: 1\.2/);
-  assert.match(headerStyles, /\.site-header nav[\s\S]*?line-height: 1\.5/);
-  assert.doesNotMatch(headerStyles, /\.site-header nav \{\s*display: none;/, 'primary navigation must remain available on mobile');
+  assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Building small, practical tools\.<\/EstatePageTitle>/);
+  assert.match(app, /<section[^>]*id="projects"/);
+  assert.match(app, /useState<ProjectView>\("tools"\)/);
+  assert.match(app, /className="state-tabs"/);
+  assert.match(app, /aria-controls="estate-window"/);
+  assert.match(app, /className="estate-window"/);
+  assert.match(app, /<dl className="record-rows">/);
+  assert.match(app, /record-row\$\{record\.evidence/);
+  assert.match(app, /project-evidence\$\{record\.evidence\.portrait/);
+  assert.match(app, /className="record-ledger"/);
+  assert.match(app, /Tools view selected\. Three projects are visible\./);
+  assert.match(app, /Workbench view selected\. One project is visible\./);
+  assert.match(app, /opnotes-live\.webp/);
+  assert.match(app, /scratchpad-active-list\.webp/);
+  assert.match(app, /aligned-live\.webp/);
+  for (const asset of ['opnotes-live.webp', 'scratchpad-active-list.webp', 'aligned-live.webp']) {
+    assert.equal(existsSync(new URL(`../src/assets/evidence/${asset}`, import.meta.url)), true, `missing truthful evidence asset: ${asset}`);
+  }
+  assert.match(app, /from "@sangeev\/estate-ui"/);
+  assert.match(app, /<>\s*<PublicEstateHeader current="home"[\s\S]*?<EstateShell variant="landing">/, 'header must sit outside the named shared shell');
+  assert.match(styles, /@sangeev\/estate-ui\/contract\.css/);
+  assert.match(styles, /\.estate-window/);
+  assert.match(styles, /\.record-row/);
+  assert.match(styles, /\.record-ledger/);
+  assert.doesNotMatch(styles, /\.tool-card|\.hero-boundary|\.workbench-item/);
+  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.2.tgz');
   assert.match(app, /Operation note generator/);
   assert.match(app, /Clinical Shift Scratchpad/);
   assert.match(app, /AlignEd/);
@@ -38,16 +65,15 @@ test('homepage keeps a plain public tools and workbench structure', () => {
   assert.match(app, /Do not enter patient-identifiable information/);
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
-  assert.doesNotMatch(app, /eyebrow|tool-kind|tool-number|Clinical boundary|Useful enough to keep within reach|Also on the workbench|The clinical tools stay separate/);
+  assert.doesNotMatch(app, /tool-card|hero-boundary|workbench-item|Public tools|eyebrow|tool-kind|tool-number|Useful enough to keep within reach|Also on the workbench|The clinical tools stay separate/);
 });
 
 test('homepage has a persistent theme control and no manual stale date', () => {
   const app = read('../src/App.tsx');
-  const theme = read('../src/lib/theme.ts');
+  const main = read('../src/main.tsx');
 
   assert.match(app, /PublicEstateHeader/);
-  assert.match(theme, /sangeevSiteTheme/);
-  assert.match(theme, /Domain=\.sangeev\.me/);
-  assert.ok(theme.indexOf('const cookie = readCookie()') < theme.indexOf('window.localStorage.getItem'), 'cross-subdomain cookie should take precedence over stale origin storage');
+  assert.match(app, /useEstateTheme/);
+  assert.match(main, /initialiseEstateTheme\(\)/);
   assert.doesNotMatch(app, /Last updated/);
 });

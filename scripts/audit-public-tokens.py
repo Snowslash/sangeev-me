@@ -1,355 +1,103 @@
 #!/usr/bin/env python3
-"""Audit Sangeev public-estate CSS token drift.
+"""Run the successor public-estate visual contract audit.
 
-Run from the sangeev-me repo in the Hermes coding workspace:
-
-    python3 scripts/audit-public-tokens.py
-
-It checks:
-- each public repo has the byte-identical canonical token file;
-- required token declarations in each main stylesheet match the canonical light/dark values;
-- clinical/warning boxes use canonical warning tokens and strong text colour;
-- HTML links include the canonical token stylesheet before the site stylesheet;
-- React public frontends use byte-identical public-estate header and theme-toggle CSS plus the same markup contracts.
+The canonical implementation now lives in the versioned @sangeev/estate-ui
+package. This compatibility entry point keeps the established command while
+checking the package source, reproducible artifact, exact dependency pins,
+all four site integrations, named layout variants and removal of local chrome
+copies.
 """
 
 from __future__ import annotations
 
-import re
+import json
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE = ROOT.parent
+PACKAGE_ROOT = WORKSPACE / "sangeev-estate-ui"
+MANIFEST = PACKAGE_ROOT / "estate.manifest.json"
+CONTRACT_CSS = PACKAGE_ROOT / "src/contract.css"
+AUDIT = PACKAGE_ROOT / "scripts/audit-estate.mjs"
 
-SITES = {
-    "sangeev.me": WORKSPACE / "sangeev-me",
-    "scratchpad": WORKSPACE / "clinical-shift-scratchpad",
-    "opnotes": WORKSPACE / "Op note gen",
+REQUIRED_SITES = {
+    "sangeev.me": "landing",
+    "opnotes": "standard-app",
+    "scratchpad": "landing",
+    "aligned": "wide-app",
 }
 
-HEADER_CONTROLS = {
-    "sangeev.me": (
-        WORKSPACE / "sangeev-me/src/styles/public-estate-header.css",
-        WORKSPACE / "sangeev-me/src/components/PublicEstateHeader.tsx",
-    ),
-    "scratchpad": (
-        WORKSPACE / "clinical-shift-scratchpad/landing/src/styles/public-estate-header.css",
-        WORKSPACE / "clinical-shift-scratchpad/landing/src/components/PublicEstateHeader.tsx",
-    ),
-    "opnotes-v2": (
-        WORKSPACE / "op-note-gen-v2/src/styles/public-estate-header.css",
-        WORKSPACE / "op-note-gen-v2/src/components/PublicEstateHeader.tsx",
-    ),
-    "aligned": (
-        WORKSPACE / "AlignEd-public-clean/src/styles/public-estate-header.css",
-        WORKSPACE / "AlignEd-public-clean/src/components/PublicEstateHeader.tsx",
-    ),
-}
-
-HEADER_MARKUP_CONTRACT = (
-    'className="site-header"',
-    'data-print-hidden',
-    'className="wordmark"',
-    'aria-label="Primary navigation"',
-    'https://sangeev.me/#tools',
-    'https://opnotes.sangeev.me',
-    'https://scratchpad.sangeev.me',
-    'https://aligned.sangeev.me',
-    '<ThemeToggle theme={theme} onToggle={onToggleTheme} />',
+REQUIRED_TOKENS = (
+    "--estate-atlas: #0b655f",
+    "--estate-deep: #073f3c",
+    "--estate-channel: #0a5652",
+    "--estate-shoal: #3b8c83",
+    "--estate-mist: #d9eee9",
+    "--estate-mist-soft: #c5e3dd",
+    "--estate-foam: #f5fffc",
+    "--estate-coral: #ff7a66",
+    "--estate-leaf: #c4eb62",
+    "--estate-ink: #092c2a",
 )
 
-THEME_CONTROLS = {
-    "sangeev.me": (
-        WORKSPACE / "sangeev-me/src/styles/theme-toggle.css",
-        WORKSPACE / "sangeev-me/src/components/ThemeToggle.tsx",
-    ),
-    "scratchpad": (
-        WORKSPACE / "clinical-shift-scratchpad/landing/src/styles/theme-toggle.css",
-        WORKSPACE / "clinical-shift-scratchpad/landing/src/components/ThemeToggle.tsx",
-    ),
-    "opnotes-v2": (
-        WORKSPACE / "op-note-gen-v2/src/styles/theme-toggle.css",
-        WORKSPACE / "op-note-gen-v2/src/components/ThemeToggle.tsx",
-    ),
-    "aligned": (
-        WORKSPACE / "AlignEd-public-clean/src/styles/theme-toggle.css",
-        WORKSPACE / "AlignEd-public-clean/src/components/ThemeToggle.tsx",
-    ),
-}
-
-THEME_STATE_FILES = {
-    "sangeev.me": WORKSPACE / "sangeev-me/src/lib/theme.ts",
-    "scratchpad": WORKSPACE / "clinical-shift-scratchpad/landing/src/lib/theme.ts",
-    "opnotes-v2": WORKSPACE / "op-note-gen-v2/src/app/theme.ts",
-    "aligned": WORKSPACE / "AlignEd-public-clean/src/theme.ts",
-}
-
-THEME_STATE_MARKERS = (
-    "sangeevSiteTheme",
-    "Domain=.sangeev.me",
-    "SameSite=Lax",
-)
-
-THEME_MARKUP_CONTRACT = (
-    'className="theme-toggle"',
-    'aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}',
-    'aria-pressed={isDark}',
-    '<Sun aria-hidden="true" size={15} />',
-    '<Moon aria-hidden="true" size={15} />',
-    '<span>{isDark ? "Light" : "Dark"}</span>',
-)
-
-TOKEN_FILE = "docs/sangeev-public-tokens.css"
-STYLE_FILE = "docs/styles.css"
-STYLE_GLOBS = {
-    "sangeev.me": "docs/assets/*.css",
-    "scratchpad": "docs/assets/*.css",
-}
-HTML_GLOB = "docs/*.html"
-STYLESHEET_RE = re.compile(r'href="([^"]+\.css)"')
-
-CANONICAL = {
-    "light": {
-        "--bg": "#f4f0e8",
-        "--panel": "#fbf8f2",
-        "--text": "#1d1b18",
-        "--text-strong": "#1d1b18",
-        "--text-muted": "#655e55",
-        "--border": "#c7b8a5",
-        "--border-strong": "#9b8770",
-        "--accent": "#8a1538",
-        "--accent-hover": "#641028",
-        "--warning-bg": "#f8ead3",
-        "--warning-border": "#c7b8a5",
-    },
-    "dark": {
-        "--bg": "#1d1b18",
-        "--panel": "#24211d",
-        "--text": "#f4f0e8",
-        "--text-strong": "#f4f0e8",
-        "--text-muted": "#c7b8a5",
-        "--border": "#655e55",
-        "--border-strong": "#8b7b68",
-        "--accent": "#a3264d",
-        "--accent-hover": "#c43b63",
-        "--warning-bg": "#2d251b",
-        "--warning-border": "#655e55",
-    },
-}
-
-# Known site-local aliases that should track canonical tokens exactly.
-ALIASES = {
-    "light": {
-        "--brand": CANONICAL["light"]["--accent"],
-        "--brand-hover": CANONICAL["light"]["--accent-hover"],
-    },
-    "dark": {
-        "--brand": CANONICAL["dark"]["--accent"],
-        "--brand-hover": CANONICAL["dark"]["--accent-hover"],
-        "--landing-paper": CANONICAL["dark"]["--bg"],
-        "--landing-ink": CANONICAL["dark"]["--text"],
-        "--landing-muted": CANONICAL["dark"]["--text-muted"],
-        "--landing-rule": CANONICAL["dark"]["--border"],
-        "--landing-rule-strong": CANONICAL["dark"]["--border-strong"],
-        "--landing-link": CANONICAL["dark"]["--accent"],
-    },
-}
-
-BLOCK_RE = re.compile(r"([^{}]+)\{([^{}]+)\}", re.S)
-DECL_RE = re.compile(r"(--[\w-]+)\s*:\s*([^;]+);")
-PROP_RE = re.compile(r"([\w-]+)\s*:\s*([^;]+);")
-
-WARNING_RULES = {
-    "sangeev.me": {
-        ".boundary": {
-            "background": "var(--warning-bg)",
-            "border": "1px solid var(--warning-border)",
-            "color": "var(--text-strong)",
-        },
-        ".boundary p": {"color": "var(--text-strong)"},
-        ".boundary strong": {"color": "var(--text-strong)"},
-    },
-    "scratchpad": {
-        ".boundary": {
-            "background": "var(--warning-bg)",
-            "border": "1px solid var(--warning-border)",
-            "color": "var(--text-strong)",
-        },
-        ".boundary p": {"color": "var(--text-strong)"},
-        ".boundary strong": {"color": "var(--text-strong)"},
-    },
-    "opnotes": {
-        ".landing-safety": {
-            "background": "var(--warning-bg)",
-            "border": "1px solid var(--warning-border)",
-            "color": "var(--text-strong)",
-        },
-        ".landing-safety p": {"color": "var(--text-strong)"},
-        ".landing-safety strong": {"color": "var(--text-strong)"},
-    },
-}
-
-
-def strip_comments(css: str) -> str:
-    return re.sub(r"/\*.*?\*/", "", css, flags=re.S)
-
-
-def theme_for_selector(selector: str) -> str | None:
-    selector = selector.strip()
-    if "data-theme=\"dark\"" in selector or "data-theme='dark'" in selector:
-        return "dark"
-    if selector == ":root" or selector.endswith(" :root"):
-        return "light"
-    # Sangeev's small pages also set page-scoped variables on body classes.
-    if ".app-body" in selector or ".landing-body" in selector:
-        return "light"
-    return None
-
-
-def normalise_value(value: str) -> str:
-    return re.sub(r"\s+", " ", value.strip()).lower()
-
-
-def selector_parts(selector: str) -> set[str]:
-    return {part.strip() for part in selector.split(",")}
-
-
-def declarations_for_selector(css: str, target: str) -> dict[str, str]:
-    declarations: dict[str, str] = {}
-    for selector, body in BLOCK_RE.findall(css):
-        if target in selector_parts(selector):
-            declarations.update({name: value.strip() for name, value in PROP_RE.findall(body)})
-    return declarations
-
-
-def check_warning_rules(site: str, css: str, rel: Path, failures: list[str]) -> None:
-    for selector, expected_props in WARNING_RULES.get(site, {}).items():
-        actual = declarations_for_selector(css, selector)
-        if not actual:
-            failures.append(f"{site}: {rel} missing warning selector {selector}")
-            continue
-        for prop, expected in expected_props.items():
-            actual_value = actual.get(prop)
-            if actual_value is None:
-                failures.append(f"{site}: {rel} {selector} missing {prop}: {expected}")
-            elif normalise_value(actual_value) != normalise_value(expected):
-                failures.append(
-                    f"{site}: {rel} {selector} {prop}={actual_value} expected {expected}"
-                )
-
-
-def find_style_path(site: str, repo: Path, failures: list[str]) -> Path | None:
-    pattern = STYLE_GLOBS.get(site)
-    if pattern is None:
-        path = repo / STYLE_FILE
-        if not path.exists():
-            failures.append(f"{site}: missing {STYLE_FILE}")
-            return None
-        return path
-
-    candidates = sorted(repo.glob(pattern))
-    if len(candidates) != 1:
-        failures.append(f"{site}: expected one built app stylesheet matching {pattern}, found {len(candidates)}")
-        return None
-    return candidates[0]
-
-
-def check_html_order(site: str, repo: Path, failures: list[str]) -> None:
-    for html in sorted(repo.glob(HTML_GLOB)):
-        text = html.read_text()
-        stylesheet_hrefs = STYLESHEET_RE.findall(text)
-        app_styles = [href for href in stylesheet_hrefs if not href.endswith("sangeev-public-tokens.css")]
-        if not app_styles:
-            continue
-        token_pos = text.find("sangeev-public-tokens.css")
-        style_pos = text.find(app_styles[0])
-        if token_pos == -1:
-            failures.append(f"{site}: {html.relative_to(repo)} does not load sangeev-public-tokens.css")
-        elif token_pos > style_pos:
-            failures.append(f"{site}: {html.relative_to(repo)} loads tokens after the app stylesheet")
+RETIRED_TOKENS = ("#8a1538", "#a3264d", "#c43b63")
 
 
 def main() -> int:
     failures: list[str] = []
-    canonical_text = (ROOT / TOKEN_FILE).read_text()
 
-    for site, repo in SITES.items():
-        token_path = repo / TOKEN_FILE
-        style_path = find_style_path(site, repo, failures)
-        if not token_path.exists():
-            failures.append(f"{site}: missing {TOKEN_FILE}")
-            continue
-        if token_path.read_text() != canonical_text:
-            failures.append(f"{site}: {TOKEN_FILE} differs from sangeev.me canonical file")
-        if style_path is None:
-            continue
+    for path in (MANIFEST, CONTRACT_CSS, AUDIT):
+        if not path.exists():
+            failures.append(f"missing canonical estate package file: {path}")
 
-        css = strip_comments(style_path.read_text())
-        for selector, body in BLOCK_RE.findall(css):
-            theme = theme_for_selector(selector)
-            if theme is None:
-                continue
-            expected = {**CANONICAL[theme], **ALIASES.get(theme, {})}
-            for name, value in DECL_RE.findall(body):
-                value = value.strip()
-                if name in expected and value.lower() != expected[name].lower():
-                    rel = style_path.relative_to(repo)
-                    failures.append(
-                        f"{site}: {rel} {selector.strip()} {name}={value} expected {expected[name]}"
-                    )
+    if not failures:
+        manifest = json.loads(MANIFEST.read_text())
+        actual_sites = {site["name"]: site["variant"] for site in manifest.get("sites", [])}
+        if actual_sites != REQUIRED_SITES:
+            failures.append(f"site inventory mismatch: {actual_sites!r} expected {REQUIRED_SITES!r}")
 
-        check_warning_rules(site, css, style_path.relative_to(repo), failures)
-        check_html_order(site, repo, failures)
+        css = CONTRACT_CSS.read_text().lower()
+        for token in REQUIRED_TOKENS:
+            if token not in css:
+                failures.append(f"canonical contract missing token: {token}")
+        for token in RETIRED_TOKENS:
+            if token in css:
+                failures.append(f"canonical contract still contains retired burgundy token: {token}")
 
-    canonical_header_css = HEADER_CONTROLS["sangeev.me"][0].read_text()
-    for site, (css_path, component_path) in HEADER_CONTROLS.items():
-        if not css_path.exists():
-            failures.append(f"{site}: missing shared public-estate header CSS {css_path}")
-            continue
-        if css_path.read_text() != canonical_header_css:
-            failures.append(f"{site}: public-estate header CSS differs from sangeev.me canonical file")
-        if not component_path.exists():
-            failures.append(f"{site}: missing PublicEstateHeader component {component_path}")
-            continue
-        component = component_path.read_text()
-        for marker in HEADER_MARKUP_CONTRACT:
-            if marker not in component:
-                failures.append(f"{site}: PublicEstateHeader missing markup contract marker {marker}")
-
-    canonical_control_css = THEME_CONTROLS["sangeev.me"][0].read_text()
-    for site, (css_path, component_path) in THEME_CONTROLS.items():
-        if not css_path.exists():
-            failures.append(f"{site}: missing shared theme control CSS {css_path}")
-            continue
-        if css_path.read_text() != canonical_control_css:
-            failures.append(f"{site}: theme control CSS differs from sangeev.me canonical file")
-        if not component_path.exists():
-            failures.append(f"{site}: missing ThemeToggle component {component_path}")
-            continue
-        component = component_path.read_text()
-        for marker in THEME_MARKUP_CONTRACT:
-            if marker not in component:
-                failures.append(f"{site}: ThemeToggle missing markup contract marker {marker}")
-
-    for site, theme_path in THEME_STATE_FILES.items():
-        if not theme_path.exists():
-            failures.append(f"{site}: missing theme state module {theme_path}")
-            continue
-        theme_source = theme_path.read_text()
-        for marker in THEME_STATE_MARKERS:
-            if marker not in theme_source:
-                failures.append(f"{site}: theme state module missing estate persistence marker {marker}")
+        for font in (
+            PACKAGE_ROOT / "assets/fonts/Literata-Variable.ttf",
+            PACKAGE_ROOT / "assets/fonts/AtkinsonHyperlegibleNext-Variable.ttf",
+            PACKAGE_ROOT / "LICENSES/OFL-Literata.txt",
+            PACKAGE_ROOT / "LICENSES/OFL-Atkinson-Hyperlegible-Next.txt",
+        ):
+            if not font.exists() or font.stat().st_size == 0:
+                failures.append(f"missing or empty packaged font/licence asset: {font}")
 
     if failures:
-        print("Public token audit FAILED:\n")
+        print("Public estate contract audit FAILED:\n")
         for failure in failures:
             print(f"- {failure}")
         return 1
 
-    print("Public token audit passed for: " + ", ".join(SITES))
+    result = subprocess.run(
+        ["node", str(AUDIT)],
+        cwd=PACKAGE_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.stdout:
+        print(result.stdout.rstrip())
+    if result.stderr:
+        print(result.stderr.rstrip(), file=sys.stderr)
+    if result.returncode:
+        return result.returncode
+
+    print("Public estate successor audit passed for: " + ", ".join(REQUIRED_SITES))
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

@@ -10,6 +10,7 @@
     "check": "npm run test && npm run build"
   },
   "dependencies": {
+    "@sangeev/estate-ui": "file:vendor/sangeev-estate-ui-2.0.0-alpha.2.tgz",
     "@tailwindcss/vite": "^4.3.2",
     "lucide-react": "^0.468.0",
     "react": "^19.2.7",
