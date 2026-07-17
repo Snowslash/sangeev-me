@@ -56,6 +56,10 @@ test('homepage implements the approved stateful evidence-window project register
   assert.match(app, /opnotes-landing\.webp/);
   assert.match(app, /scratchpad-landing\.webp/);
   assert.match(app, /aligned-landing\.webp/);
+  assert.match(app, /Redesign preview of the Operation Note Generator landing page/);
+  assert.match(app, /Current Clinical Shift Scratchpad landing page/);
+  assert.match(app, /Redesign preview of the AlignEd landing page/);
+  assert.doesNotMatch(app, /Current (?:Operation Note Generator|AlignEd) project page/);
   for (const asset of ['opnotes-landing.webp', 'scratchpad-landing.webp', 'aligned-landing.webp']) {
     assert.equal(existsSync(new URL(`../src/assets/evidence/${asset}`, import.meta.url)), true, `missing truthful evidence asset: ${asset}`);
   }
