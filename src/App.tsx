@@ -7,9 +7,9 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-import alignedEvidence from "./assets/evidence/aligned-live.webp";
-import opnotesEvidence from "./assets/evidence/opnotes-live.webp";
-import scratchpadEvidence from "./assets/evidence/scratchpad-active-list.webp";
+import alignedEvidence from "./assets/evidence/aligned-landing.webp";
+import opnotesEvidence from "./assets/evidence/opnotes-landing.webp";
+import scratchpadEvidence from "./assets/evidence/scratchpad-landing.webp";
 
 type ProjectView = "tools" | "workbench";
 
@@ -18,7 +18,6 @@ type Evidence = {
   alt: string;
   width: number;
   height: number;
-  portrait?: boolean;
 };
 
 type ProjectRecord = {
@@ -30,15 +29,9 @@ type ProjectRecord = {
   evidence: Evidence | null;
 };
 
-type LedgerItem = {
-  heading: string;
-  text: string;
-};
-
 type ProjectRegisterView = {
   status: string;
   records: ProjectRecord[];
-  ledger: LedgerItem[];
 };
 
 const projectViews: Record<ProjectView, ProjectRegisterView> = {
@@ -54,8 +47,8 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         evidence: {
           src: opnotesEvidence,
           width: 960,
-          height: 377,
-          alt: "Current Operation Note Generator interface with no entered patient data.",
+          height: 409,
+          alt: "Current Operation Note Generator project page with an empty browser-only drafting workflow.",
         },
       },
       {
@@ -66,10 +59,9 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         ariaLabel: "View Clinical Shift Scratchpad",
         evidence: {
           src: scratchpadEvidence,
-          width: 560,
-          height: 1139,
-          alt: "Synthetic Clinical Shift Scratchpad demo with fictional job details.",
-          portrait: true,
+          width: 960,
+          height: 409,
+          alt: "Current Clinical Shift Scratchpad project page with its local-device privacy boundary.",
         },
       },
       {
@@ -81,15 +73,10 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         evidence: {
           src: alignedEvidence,
           width: 960,
-          height: 342,
-          alt: "Current AlignEd teaching workflow with no learner records entered.",
+          height: 409,
+          alt: "Current AlignEd project page with an empty browser-local teaching workflow.",
         },
       },
-    ],
-    ledger: [
-      { heading: "Boundary", text: "Do not enter patient-identifiable information." },
-      { heading: "Storage", text: "Each tool states its local boundary." },
-      { heading: "Tracking", text: "No analytics. No tracking." },
     ],
   },
   workbench: {
@@ -103,11 +90,6 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
         ariaLabel: "View Chess Coach source",
         evidence: null,
       },
-    ],
-    ledger: [
-      { heading: "Source", text: "Repository only." },
-      { heading: "Files", text: "PGNs and reports stay local." },
-      { heading: "Tracking", text: "No analytics. No tracking." },
     ],
   },
 };
@@ -167,7 +149,7 @@ function App() {
                         <a className="record-action" href={record.href} aria-label={record.ariaLabel}>{record.action}</a>
                       </div>
                       {record.evidence ? (
-                        <figure className={`project-evidence${record.evidence.portrait ? " project-evidence--portrait" : ""}`}>
+                        <figure className="project-evidence">
                           <img
                             src={record.evidence.src}
                             width={record.evidence.width}
@@ -182,14 +164,6 @@ function App() {
                 ))}
               </dl>
 
-              <div className="record-ledger">
-                {currentView.ledger.map((item) => (
-                  <div className="ledger-cell" key={item.heading}>
-                    <h3 className="structural-heading">{item.heading}</h3>
-                    <p>{item.text}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </section>
         </main>
@@ -197,8 +171,7 @@ function App() {
 
       <footer className="site-footer">
         <EstateShell variant="landing" className="footer-inner">
-          <p>Sangeev · Surgery, software and small useful things.</p>
-          <p>No analytics. No tracking.</p>
+          <p>Maintained by Sangeev</p>
         </EstateShell>
       </footer>
     </>
