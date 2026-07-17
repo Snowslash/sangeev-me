@@ -26,6 +26,16 @@ test('homepage uses the typed Vite React entrypoint', () => {
   }
 });
 
+test('homepage deploys the reviewed docs artifact as a minimal Cloudflare Worker', () => {
+  const wrangler = JSON.parse(read('../wrangler.jsonc'));
+  assert.equal(wrangler.name, 'sangeev-me');
+  assert.deepEqual(wrangler.observability, { enabled: false });
+  assert.deepEqual(wrangler.assets, {
+    directory: './docs',
+    not_found_handling: 'single-page-application',
+  });
+});
+
 test('homepage implements the approved stateful evidence-window project register', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');

@@ -25,3 +25,8 @@ node_modules/
 secrets/
 credentials/
 *.local
+
+# Cloudflare Wrangler local state
+.wrangler/
+.dev.vars*
+!.dev.vars.example
