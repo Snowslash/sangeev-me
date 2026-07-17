@@ -226,45 +226,9 @@ figure {
 .project-evidence img {
   display: block;
   width: 100%;
-  height: 10.5rem;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   object-position: center top;
-}
-
-.project-evidence--portrait img {
-  object-position: center 12%;
-}
-
-.record-ledger {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-block-start: 2px solid var(--estate-deep);
-  background: var(--estate-foam);
-}
-
-.ledger-cell {
-  min-width: 0;
-  padding: var(--estate-space-4);
-  color: var(--estate-deep);
-}
-
-.ledger-cell + .ledger-cell {
-  border-inline-start: 1px solid var(--estate-shoal);
-}
-
-.structural-heading {
-  color: var(--estate-deep);
-  font-family: var(--estate-font-heading);
-  font-size: 0.95rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
-}
-
-.ledger-cell p {
-  margin-block-start: var(--estate-space-1);
-  color: var(--estate-deep);
-  font-size: 0.95rem;
 }
 
 .site-footer {
@@ -327,8 +291,7 @@ figure {
     min-width: 0;
   }
 
-  .record-row,
-  .record-ledger {
+  .record-row {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -346,15 +309,6 @@ figure {
 
   .record-row--plain dd {
     min-height: 0;
-  }
-
-  .project-evidence img {
-    height: 11rem;
-  }
-
-  .ledger-cell + .ledger-cell {
-    border-block-start: 1px solid var(--estate-shoal);
-    border-inline-start: 0;
   }
 
   .footer-inner {
@@ -384,8 +338,6 @@ figure {
   .record-row,
   .record-row dd,
   .project-evidence,
-  .record-ledger,
-  .ledger-cell,
   .site-footer {
     border-color: CanvasText;
   }

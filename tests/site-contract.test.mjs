@@ -49,22 +49,26 @@ test('homepage implements the approved stateful evidence-window project register
   assert.match(app, /className="estate-window"/);
   assert.match(app, /<dl className="record-rows">/);
   assert.match(app, /record-row\$\{record\.evidence/);
-  assert.match(app, /project-evidence\$\{record\.evidence\.portrait/);
-  assert.match(app, /className="record-ledger"/);
+  assert.match(app, /className="project-evidence"/);
+  assert.doesNotMatch(app, /record-ledger|ledger-cell/);
   assert.match(app, /Tools view selected\. Three projects are visible\./);
   assert.match(app, /Workbench view selected\. One project is visible\./);
-  assert.match(app, /opnotes-live\.webp/);
-  assert.match(app, /scratchpad-active-list\.webp/);
-  assert.match(app, /aligned-live\.webp/);
-  for (const asset of ['opnotes-live.webp', 'scratchpad-active-list.webp', 'aligned-live.webp']) {
+  assert.match(app, /opnotes-landing\.webp/);
+  assert.match(app, /scratchpad-landing\.webp/);
+  assert.match(app, /aligned-landing\.webp/);
+  for (const asset of ['opnotes-landing.webp', 'scratchpad-landing.webp', 'aligned-landing.webp']) {
     assert.equal(existsSync(new URL(`../src/assets/evidence/${asset}`, import.meta.url)), true, `missing truthful evidence asset: ${asset}`);
+  }
+  for (const staleAsset of ['opnotes-live.webp', 'scratchpad-active-list.webp', 'aligned-live.webp']) {
+    assert.equal(existsSync(new URL(`../src/assets/evidence/${staleAsset}`, import.meta.url)), false, `stale evidence asset remains: ${staleAsset}`);
   }
   assert.match(app, /from "@sangeev\/estate-ui"/);
   assert.match(app, /<>\s*<PublicEstateHeader current="home"[\s\S]*?<EstateShell variant="landing">/, 'header must sit outside the named shared shell');
   assert.match(styles, /@sangeev\/estate-ui\/contract\.css/);
   assert.match(styles, /\.estate-window/);
   assert.match(styles, /\.record-row/);
-  assert.match(styles, /\.record-ledger/);
+  assert.match(styles, /\.project-evidence img \{[^}]*height: auto;[^}]*object-fit: contain;/s);
+  assert.doesNotMatch(styles, /\.record-ledger|\.ledger-cell/);
   assert.doesNotMatch(styles, /\.tool-card|\.hero-boundary|\.workbench-item/);
   assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.2.tgz');
   assert.match(app, /Operation note generator/);
@@ -72,10 +76,12 @@ test('homepage implements the approved stateful evidence-window project register
   assert.match(app, /AlignEd/);
   assert.match(app, /https:\/\/aligned\.sangeev\.me/);
   assert.match(app, /Chess Coach/);
-  assert.match(app, /Do not enter patient-identifiable information/);
+  assert.doesNotMatch(app, /Boundary|Each tool states its local boundary|No analytics\. No tracking\./);
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
   assert.doesNotMatch(app, /tool-card|hero-boundary|workbench-item|Public tools|eyebrow|tool-kind|tool-number|Useful enough to keep within reach|Also on the workbench|The clinical tools stay separate/);
+  assert.match(app, /<p>Maintained by Sangeev<\/p>/);
+  assert.doesNotMatch(app, /Sangeev · Surgery, software and small useful things\.|No analytics\. No tracking\./);
 });
 
 test('homepage has a persistent theme control and no manual stale date', () => {
