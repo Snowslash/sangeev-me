@@ -7,9 +7,9 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-import alignedEvidence from "./assets/evidence/aligned-landing.webp";
-import opnotesEvidence from "./assets/evidence/opnotes-landing.webp";
-import scratchpadEvidence from "./assets/evidence/scratchpad-landing.webp";
+import alignedEvidence from "./assets/evidence/aligned-app.webp";
+import opnotesEvidence from "./assets/evidence/opnotes-app.webp";
+import scratchpadEvidence from "./assets/evidence/scratchpad-app.webp";
 
 type ProjectView = "tools" | "workbench";
 
@@ -48,7 +48,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: opnotesEvidence,
           width: 960,
           height: 409,
-          alt: "Redesign preview of the Operation Note Generator landing page, showing an empty browser-only drafting workflow.",
+          alt: "Operation Note Generator app at the empty Procedure stage.",
         },
       },
       {
@@ -61,7 +61,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: scratchpadEvidence,
           width: 960,
           height: 409,
-          alt: "Current Clinical Shift Scratchpad landing page with its local-device privacy boundary.",
+          alt: "Clinical Shift Scratchpad app showing shift controls and job filters, with job content excluded.",
         },
       },
       {
@@ -74,7 +74,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: alignedEvidence,
           width: 960,
           height: 409,
-          alt: "Redesign preview of the AlignEd landing page, showing an empty browser-local teaching workflow.",
+          alt: "AlignEd app at the empty teaching-workflow choice screen.",
         },
       },
     ],

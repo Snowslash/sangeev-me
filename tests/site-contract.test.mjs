@@ -1,9 +1,18 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const fontLicenses = ['OFL-Atkinson-Hyperlegible-Next.txt', 'OFL-Literata.txt'];
+
+const readLossyWebpDimensions = (file) => {
+  const bytes = readFileSync(file);
+  const marker = bytes.indexOf(Buffer.from('VP8 '));
+  assert.notEqual(marker, -1, `missing VP8 image chunk: ${file}`);
+  const payload = marker + 8;
+  assert.deepEqual([...bytes.subarray(payload + 3, payload + 6)], [0x9d, 0x01, 0x2a], `invalid VP8 frame header: ${file}`);
+  return [bytes.readUInt16LE(payload + 6) & 0x3fff, bytes.readUInt16LE(payload + 8) & 0x3fff];
+};
 
 test('homepage uses the typed Vite React entrypoint', () => {
   const packageJson = JSON.parse(read('../package.json'));
@@ -53,17 +62,23 @@ test('homepage implements the approved stateful evidence-window project register
   assert.doesNotMatch(app, /record-ledger|ledger-cell/);
   assert.match(app, /Tools view selected\. Three projects are visible\./);
   assert.match(app, /Workbench view selected\. One project is visible\./);
-  assert.match(app, /opnotes-landing\.webp/);
-  assert.match(app, /scratchpad-landing\.webp/);
-  assert.match(app, /aligned-landing\.webp/);
-  assert.match(app, /Redesign preview of the Operation Note Generator landing page/);
-  assert.match(app, /Current Clinical Shift Scratchpad landing page/);
-  assert.match(app, /Redesign preview of the AlignEd landing page/);
-  assert.doesNotMatch(app, /Current (?:Operation Note Generator|AlignEd) project page/);
-  for (const asset of ['opnotes-landing.webp', 'scratchpad-landing.webp', 'aligned-landing.webp']) {
-    assert.equal(existsSync(new URL(`../src/assets/evidence/${asset}`, import.meta.url)), true, `missing truthful evidence asset: ${asset}`);
+  assert.match(app, /opnotes-app\.webp/);
+  assert.match(app, /scratchpad-app\.webp/);
+  assert.match(app, /aligned-app\.webp/);
+  assert.match(app, /Operation Note Generator app at the empty Procedure stage/);
+  assert.match(app, /Clinical Shift Scratchpad app showing shift controls and job filters, with job content excluded/);
+  assert.match(app, /AlignEd app at the empty teaching-workflow choice screen/);
+  assert.doesNotMatch(app, /(?:opnotes|scratchpad|aligned)-landing\.webp|Redesign preview/);
+  for (const asset of ['opnotes-app.webp', 'scratchpad-app.webp', 'aligned-app.webp']) {
+    const source = new URL(`../src/assets/evidence/${asset}`, import.meta.url);
+    assert.equal(existsSync(source), true, `missing truthful evidence asset: ${asset}`);
+    assert.deepEqual(readLossyWebpDimensions(source), [960, 409], `unexpected evidence dimensions: ${asset}`);
+    const stem = asset.replace(/\.webp$/, '');
+    const deployed = readdirSync(new URL('../docs/assets/', import.meta.url)).filter((name) => name.startsWith(`${stem}-`) && name.endsWith('.webp'));
+    assert.equal(deployed.length, 1, `expected one deployed evidence asset for ${asset}`);
+    assert.deepEqual(readFileSync(new URL(`../docs/assets/${deployed[0]}`, import.meta.url)), readFileSync(source), `deployed evidence drift: ${asset}`);
   }
-  for (const staleAsset of ['opnotes-live.webp', 'scratchpad-active-list.webp', 'aligned-live.webp']) {
+  for (const staleAsset of ['opnotes-landing.webp', 'scratchpad-landing.webp', 'aligned-landing.webp', 'opnotes-live.webp', 'scratchpad-active-list.webp', 'aligned-live.webp']) {
     assert.equal(existsSync(new URL(`../src/assets/evidence/${staleAsset}`, import.meta.url)), false, `stale evidence asset remains: ${staleAsset}`);
   }
   assert.match(app, /from "@sangeev\/estate-ui"/);
