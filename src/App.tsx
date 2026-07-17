@@ -48,7 +48,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: opnotesEvidence,
           width: 960,
           height: 409,
-          alt: "Current Operation Note Generator project page with an empty browser-only drafting workflow.",
+          alt: "Redesign preview of the Operation Note Generator landing page, showing an empty browser-only drafting workflow.",
         },
       },
       {
@@ -61,7 +61,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: scratchpadEvidence,
           width: 960,
           height: 409,
-          alt: "Current Clinical Shift Scratchpad project page with its local-device privacy boundary.",
+          alt: "Current Clinical Shift Scratchpad landing page with its local-device privacy boundary.",
         },
       },
       {
@@ -74,7 +74,7 @@ const projectViews: Record<ProjectView, ProjectRegisterView> = {
           src: alignedEvidence,
           width: 960,
           height: 409,
-          alt: "Current AlignEd project page with an empty browser-local teaching workflow.",
+          alt: "Redesign preview of the AlignEd landing page, showing an empty browser-local teaching workflow.",
         },
       },
     ],
