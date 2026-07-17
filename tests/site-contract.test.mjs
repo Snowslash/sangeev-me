@@ -89,7 +89,7 @@ test('homepage implements the approved stateful evidence-window project register
   assert.match(styles, /\.project-evidence img \{[^}]*height: auto;[^}]*object-fit: contain;/s);
   assert.doesNotMatch(styles, /\.record-ledger|\.ledger-cell/);
   assert.doesNotMatch(styles, /\.tool-card|\.hero-boundary|\.workbench-item/);
-  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.2.tgz');
+  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.3.tgz');
   assert.match(app, /Operation note generator/);
   assert.match(app, /Clinical Shift Scratchpad/);
   assert.match(app, /AlignEd/);
@@ -99,6 +99,9 @@ test('homepage implements the approved stateful evidence-window project register
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
   assert.equal(app.match(/action: "View project"/g)?.length, 3);
+  assert.match(app, /className="estate-primary-action record-action"/);
+  assert.match(styles, /\.record-action\s*\{[^}]*width: fit-content;[^}]*margin-block-start: var\(--estate-space-4\);/s);
+  assert.doesNotMatch(styles, /\.record-action[^}]*text-decoration/s);
   assert.match(app, /ariaLabel: "View Operation note generator"/);
   assert.match(app, /ariaLabel: "View AlignEd"/);
   assert.doesNotMatch(app, /action: "Open tool"|ariaLabel: "Open (?:Operation note generator|AlignEd)"/);

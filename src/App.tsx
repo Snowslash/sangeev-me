@@ -146,7 +146,7 @@ function App() {
                     <dd>
                       <div className="row-copy">
                         <p className="row-description">{record.description}</p>
-                        <a className="record-action" href={record.href} aria-label={record.ariaLabel}>{record.action}</a>
+                        <a className="estate-primary-action record-action" href={record.href} aria-label={record.ariaLabel}>{record.action}</a>
                       </div>
                       {record.evidence ? (
                         <figure className="project-evidence">

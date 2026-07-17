@@ -40,7 +40,7 @@ npm run check
 
 - `src/App.tsx` — stateful Tools/Workbench evidence register composed with package-owned estate primitives
 - `src/styles.css` — page-specific Evidence Window composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
-- `vendor/sangeev-estate-ui-2.0.0-alpha.2.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
+- `vendor/sangeev-estate-ui-2.0.0-alpha.3.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
 - `public/_headers` — Cloudflare Pages security headers copied into the build
 - `docs/` — generated production output
 - `scripts/audit-public-tokens.py` — cross-repo token consistency check when sibling repos are present
