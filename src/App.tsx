@@ -7,18 +7,7 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-import alignedEvidence from "./assets/evidence/aligned-app.webp";
-import opnotesEvidence from "./assets/evidence/opnotes-app.webp";
-import scratchpadEvidence from "./assets/evidence/scratchpad-app.webp";
-
-type ProjectView = "tools" | "workbench";
-
-type Evidence = {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-};
+type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "chess";
 
 type ProjectRecord = {
   name: string;
@@ -26,78 +15,122 @@ type ProjectRecord = {
   href: string;
   action: string;
   ariaLabel: string;
-  evidence: Evidence | null;
 };
 
-type ProjectRegisterView = {
-  status: string;
-  records: ProjectRecord[];
+const projects: Record<ProjectKey, ProjectRecord> = {
+  opnotes: {
+    name: "Operation Note Generator",
+    description: "Structured drafts for common emergency general-surgery operation notes.",
+    href: "https://opnotes.sangeev.me",
+    action: "Open project ↗",
+    ariaLabel: "Open Operation Note Generator",
+  },
+  scratchpad: {
+    name: "Clinical Shift Scratchpad",
+    description: "A temporary ward-job list for busy clinical shifts.",
+    href: "https://scratchpad.sangeev.me",
+    action: "Open project ↗",
+    ariaLabel: "Open Clinical Shift Scratchpad",
+  },
+  aligned: {
+    name: "AlignEd",
+    description: "Local-first teaching evidence and portfolio exports.",
+    href: "https://aligned.sangeev.me",
+    action: "Open project ↗",
+    ariaLabel: "Open AlignEd",
+  },
+  chess: {
+    name: "Chess Coach",
+    description: "Local-first chess analysis with Stockfish and optional Maia context.",
+    href: "https://github.com/Snowslash/chess-coach",
+    action: "View source ↗",
+    ariaLabel: "View Chess Coach source",
+  },
 };
 
-const projectViews: Record<ProjectView, ProjectRegisterView> = {
-  tools: {
-    status: "Tools view selected. Three projects are visible.",
-    records: [
-      {
-        name: "Operation note generator",
-        description: "Structured drafts for common emergency general-surgery operation notes.",
-        href: "https://opnotes.sangeev.me",
-        action: "View project",
-        ariaLabel: "View Operation note generator",
-        evidence: {
-          src: opnotesEvidence,
-          width: 960,
-          height: 409,
-          alt: "Operation Note Generator app at the empty Procedure stage.",
-        },
-      },
-      {
-        name: "Clinical Shift Scratchpad",
-        description: "A temporary ward-job list for busy clinical shifts.",
-        href: "https://scratchpad.sangeev.me",
-        action: "View project",
-        ariaLabel: "View Clinical Shift Scratchpad",
-        evidence: {
-          src: scratchpadEvidence,
-          width: 960,
-          height: 409,
-          alt: "Clinical Shift Scratchpad app showing shift controls and job filters, with job content excluded.",
-        },
-      },
-      {
-        name: "AlignEd",
-        description: "Local-first teaching evidence and portfolio exports.",
-        href: "https://aligned.sangeev.me",
-        action: "View project",
-        ariaLabel: "View AlignEd",
-        evidence: {
-          src: alignedEvidence,
-          width: 960,
-          height: 409,
-          alt: "AlignEd app at the empty teaching-workflow choice screen.",
-        },
-      },
-    ],
-  },
-  workbench: {
-    status: "Workbench view selected. One project is visible.",
-    records: [
-      {
-        name: "Chess Coach",
-        description: "Local-first chess analysis with Stockfish and optional Maia context.",
-        href: "https://github.com/Snowslash/chess-coach",
-        action: "View source",
-        ariaLabel: "View Chess Coach source",
-        evidence: null,
-      },
-    ],
-  },
-};
+const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "chess"];
+
+function EvidencePanel({ project }: { project: ProjectKey }) {
+  switch (project) {
+    case "opnotes":
+      return (
+        <div className="hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Structured facts</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>Finding</small><strong>Purulent fluid</strong></div>
+              <div className="op-fact"><small>Packing</small><strong>Ribbon gauze packing</strong></div>
+            </div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Reviewable excerpt</span>
+            <pre className="note-excerpt"><strong>Findings:</strong> Purulent fluid encountered.{"\n"}<strong>Operation:</strong> Cavity packed with ribbon gauze.</pre>
+          </div>
+        </div>
+      );
+
+    case "scratchpad":
+      return (
+        <div className="hinge scratch-hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Captured job</span>
+            <div className="capture-ticket">
+              <div className="capture-task">Chase CT</div>
+              <div className="capture-meta"><span>urgent</span><span>C7 / Bed 4</span></div>
+            </div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Temporary active list</span>
+            <div className="active-row">
+              <span className="active-row__priority">urgent</span>
+              <div><strong>Chase CT</strong><small>C7 / Bed 4</small></div>
+              <time dateTime="18:00">expires 18:00</time>
+            </div>
+          </div>
+        </div>
+      );
+
+    case "aligned":
+      return (
+        <div className="hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Session signal</span>
+            <div className="confidence-facts">
+              <div className="confidence-change"><span>Confidence</span><strong>2.5 → 4.0</strong></div>
+              <p className="feedback-theme">Theme: <q>More time with suturing</q></p>
+            </div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Next-session action</span>
+            <p className="session-action"><strong>Allow a longer practical station</strong> and repeat the confidence measure.</p>
+          </div>
+        </div>
+      );
+
+    case "chess":
+      return (
+        <div className="hinge chess-hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Played move</span>
+            <div className="played-move">3...Nf6??</div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Coaching note</span>
+            <p className="chess-verdict">Missed the mate threat on f7. <strong>Best: 3...g6.</strong></p>
+          </div>
+        </div>
+      );
+  }
+}
 
 function App() {
   const { theme, toggleTheme } = useEstateTheme();
-  const [selectedView, setSelectedView] = useState<ProjectView>("tools");
-  const currentView = projectViews[selectedView];
+  const [selectedProject, setSelectedProject] = useState<ProjectKey>("opnotes");
+  const project = projects[selectedProject];
 
   return (
     <>
@@ -110,60 +143,37 @@ function App() {
           </section>
 
           <section className="projects-register" id="projects" aria-labelledby="projects-title">
-            <div className="register-heading">
-              <EstateSectionTitle id="projects-title">Projects</EstateSectionTitle>
-              <div className="state-tabs" aria-label="Choose a project view">
-                {(["tools", "workbench"] as const).map((view) => (
+            <EstateSectionTitle id="projects-title">Projects</EstateSectionTitle>
+            <p className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+              {project.name} specimen shown.
+            </p>
+
+            <div className="project-window">
+              <div className="project-register" role="group" aria-label="Choose a project">
+                {projectOrder.map((key) => (
                   <button
+                    className="project-selector"
                     type="button"
-                    data-view={view}
-                    aria-pressed={selectedView === view}
-                    aria-controls="estate-window"
-                    onClick={() => setSelectedView(view)}
-                    key={view}
+                    data-project={key}
+                    aria-pressed={selectedProject === key}
+                    aria-controls="project-evidence"
+                    onClick={() => setSelectedProject(key)}
+                    key={key}
                   >
-                    {view === "tools" ? "Tools" : "Workbench"}
+                    <span>{projects[key].name}</span>
                   </button>
                 ))}
               </div>
-            </div>
 
-            <p className="visually-hidden" id="register-status" role="status" aria-live="polite" aria-atomic="true">
-              {currentView.status}
-            </p>
-
-            <div
-              className="estate-window"
-              id="estate-window"
-              data-view={selectedView}
-              role="group"
-              aria-labelledby="projects-title"
-            >
-              <dl className="record-rows">
-                {currentView.records.map((record) => (
-                  <div className={`record-row${record.evidence ? "" : " record-row--plain"}`} key={record.name}>
-                    <dt className="project-name">{record.name}</dt>
-                    <dd>
-                      <div className="row-copy">
-                        <p className="row-description">{record.description}</p>
-                        <a className="estate-primary-action record-action" href={record.href} aria-label={record.ariaLabel}>{record.action}</a>
-                      </div>
-                      {record.evidence ? (
-                        <figure className="project-evidence">
-                          <img
-                            src={record.evidence.src}
-                            width={record.evidence.width}
-                            height={record.evidence.height}
-                            alt={record.evidence.alt}
-                            loading={record.name === "Operation note generator" ? "eager" : "lazy"}
-                          />
-                        </figure>
-                      ) : null}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
+              <article className="evidence-stage" id="project-evidence" aria-label={`${project.name} evidence`}>
+                <div className="stage-bar">
+                  <p className="stage-description">{project.description}</p>
+                  <a className="estate-primary-action stage-link" href={project.href} aria-label={project.ariaLabel}>{project.action}</a>
+                </div>
+                <div className="stage-body">
+                  <EvidencePanel project={selectedProject} />
+                </div>
+              </article>
             </div>
           </section>
         </main>
