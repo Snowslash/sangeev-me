@@ -36,6 +36,23 @@ test('homepage deploys the reviewed docs artifact as a minimal Cloudflare Worker
   });
 });
 
+test('homepage publishes canonical crawler discovery files', () => {
+  for (const directory of ['public', 'docs']) {
+    const robotsPath = `../${directory}/robots.txt`;
+    const sitemapPath = `../${directory}/sitemap.xml`;
+    assert.equal(existsSync(new URL(robotsPath, import.meta.url)), true, `${directory}/robots.txt must exist`);
+    assert.equal(existsSync(new URL(sitemapPath, import.meta.url)), true, `${directory}/sitemap.xml must exist`);
+
+    const robots = read(robotsPath);
+    const sitemap = read(sitemapPath);
+    assert.equal(robots, 'User-agent: *\nAllow: /\n\nSitemap: https://sangeev.me/sitemap.xml\n');
+    assert.match(sitemap, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
+    assert.match(sitemap, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
+    assert.match(sitemap, /<loc>https:\/\/sangeev\.me\/<\/loc>/);
+    assert.doesNotMatch(sitemap, /<html\b/i);
+  }
+});
+
 test('homepage implements one unified four-project hinge window', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');
