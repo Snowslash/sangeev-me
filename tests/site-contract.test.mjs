@@ -119,6 +119,16 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(app, /<p>Maintained by Sangeev<\/p>/);
 });
 
+test('dark-theme focus uses ink only within the permanently light project window', () => {
+  const styles = read('../src/styles.css');
+  const windowRule = styles.match(/(?:^|\n)\.project-window\s*\{([^}]+)\}/)?.[1];
+  assert.match(windowRule, /background:\s*var\(--estate-mist\)/);
+  const darkWindowRule = styles.match(/\[data-theme="dark"\] \.project-window,\s*\.dark \.project-window\s*\{([^}]+)\}/)?.[1];
+  assert.ok(darkWindowRule, 'the light evidence surface needs a scoped dark-theme focus token');
+  assert.match(darkWindowRule, /--estate-focus:\s*var\(--estate-ink\)/);
+  assert.equal(styles.match(/--estate-focus\s*:/g)?.length, 1, 'do not override global or header focus colours');
+});
+
 test('homepage default HTML remains a complete useful project presentation without JavaScript', () => {
   const html = read('../index.html');
 

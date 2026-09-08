@@ -103,6 +103,12 @@ button { font: inherit; }
   color: var(--estate-ink);
 }
 
+/* The evidence window stays light even when the surrounding page is dark. */
+[data-theme="dark"] .project-window,
+.dark .project-window {
+  --estate-focus: var(--estate-ink);
+}
+
 .project-register {
   min-width: 0;
   border-inline-end: 2px solid var(--estate-deep);
