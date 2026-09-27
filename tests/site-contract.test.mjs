@@ -114,19 +114,15 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(styles, /\.hinge-arrow/);
   assert.doesNotMatch(styles, /\.provenance/);
   assert.doesNotMatch(styles, /\.state-tabs|\.record-rows|\.record-row|\.project-evidence/);
-  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.3.tgz');
+  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.4.tgz');
   assert.doesNotMatch(app, /Boundary|Each tool states its local boundary|No analytics\. No tracking\./);
   assert.match(app, /<p>Maintained by Sangeev<\/p>/);
 });
 
-test('dark-theme focus uses ink only within the permanently light project window', () => {
+test('evidence retains light tokens without overriding shared theme focus', () => {
   const styles = read('../src/styles.css');
-  const windowRule = styles.match(/(?:^|\n)\.project-window\s*\{([^}]+)\}/)?.[1];
-  assert.match(windowRule, /background:\s*var\(--estate-mist\)/);
-  const darkWindowRule = styles.match(/\[data-theme="dark"\] \.project-window,\s*\.dark \.project-window\s*\{([^}]+)\}/)?.[1];
-  assert.ok(darkWindowRule, 'the light evidence surface needs a scoped dark-theme focus token');
-  assert.match(darkWindowRule, /--estate-focus:\s*var\(--estate-ink\)/);
-  assert.equal(styles.match(/--estate-focus\s*:/g)?.length, 1, 'do not override global or header focus colours');
+  assert.match(styles, /--evidence-background: var\(--estate-mist\)/);
+  assert.doesNotMatch(styles, /--estate-focus\s*:/);
 });
 
 test('homepage default HTML remains a complete useful project presentation without JavaScript', () => {
@@ -153,4 +149,26 @@ test('homepage has a persistent theme control and no manual stale date', () => {
   assert.match(app, /useEstateTheme/);
   assert.match(main, /initialiseEstateTheme\(\)/);
   assert.doesNotMatch(app, /Last updated/);
+});
+
+test('Deep Atlas starts with dark browser chrome and semantic evidence roles', () => {
+  assert.match(read('../index.html'), /name="theme-color" content="#061e1d"/);
+});
+
+test('Deep Atlas evidence uses semantic dark roles and ink on coral', () => {
+  const css = read('../src/styles.css');
+  const dark = css.match(/\[data-theme="dark"\] \.project-window,[\s\S]*?\{([^}]+)\}/)?.[1] ?? '';
+  for (const [role, token] of Object.entries({background:'card', raised:'secondary', paper:'card', text:'foreground', muted:'muted-foreground', edge:'border', rule:'estate-rule', output:'background', 'output-text':'foreground'})) {
+    assert.ok(dark.includes(`--evidence-${role}: var(--${token});`), `${role} must resolve to the dark semantic ${token}`);
+  }
+  assert.doesNotMatch(dark, /--estate-focus:/);
+  assert.match(css, /\.capture-task\s*\{[^}]*color: var\(--estate-ink\)/);
+  assert.match(css, /\.active-row__priority\s*\{[^}]*color: var\(--estate-ink\)/);
+  assert.match(css, /\.project-selector\[aria-pressed="true"\]\s*\{[^}]*color: var\(--estate-ink\)/);
+});
+
+test('mobile evidence dividers follow the same semantic edge and rule roles', () => {
+  const css = read('../src/styles.css');
+  const mobile = css.slice(css.indexOf('@media (max-width: 620px)'));
+  assert.doesNotMatch(mobile, /var\(--estate-(deep|shoal)\)/);
 });

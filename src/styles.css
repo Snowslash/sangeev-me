@@ -67,7 +67,7 @@ button { font: inherit; }
   position: relative;
   margin-block-end: var(--estate-space-8);
   padding-block-end: var(--estate-space-7);
-  border-block-end: 1px solid var(--estate-shoal);
+  border-block-end: 1px solid var(--estate-rule);
 }
 
 .intro::after {
@@ -95,24 +95,43 @@ button { font: inherit; }
 }
 
 .project-window {
+  --evidence-background: var(--estate-mist);
+  --evidence-raised: var(--estate-mist-soft);
+  --evidence-paper: var(--estate-foam);
+  --evidence-text: var(--estate-ink);
+  --evidence-muted: var(--estate-channel);
+  --evidence-edge: var(--estate-deep);
+  --evidence-rule: var(--estate-shoal);
+  --evidence-output: var(--estate-deep);
+  --evidence-output-text: var(--estate-foam);
+  --evidence-strong: var(--estate-deep);
   display: grid;
   grid-template-columns: minmax(230px, 0.34fr) minmax(0, 1.66fr);
   min-width: 0;
-  border: 2px solid var(--estate-deep);
-  background: var(--estate-mist);
-  color: var(--estate-ink);
+  border: 2px solid var(--evidence-edge);
+  background: var(--evidence-background);
+  color: var(--evidence-text);
 }
 
-/* The evidence window stays light even when the surrounding page is dark. */
+/* Evidence composition follows semantic dark roles; the light specimen is unchanged. */
 [data-theme="dark"] .project-window,
 .dark .project-window {
-  --estate-focus: var(--estate-ink);
+  --evidence-background: var(--card);
+  --evidence-raised: var(--secondary);
+  --evidence-paper: var(--card);
+  --evidence-text: var(--foreground);
+  --evidence-muted: var(--muted-foreground);
+  --evidence-edge: var(--border);
+  --evidence-rule: var(--estate-rule);
+  --evidence-output: var(--background);
+  --evidence-output-text: var(--foreground);
+  --evidence-strong: var(--foreground);
 }
 
 .project-register {
   min-width: 0;
-  border-inline-end: 2px solid var(--estate-deep);
-  background: var(--estate-mist);
+  border-inline-end: 2px solid var(--evidence-edge);
+  background: var(--evidence-background);
 }
 
 .project-selector {
@@ -122,10 +141,10 @@ button { font: inherit; }
   padding: 18px 20px;
   align-items: center;
   border: 0;
-  border-block-end: 1px solid var(--estate-shoal);
+  border-block-end: 1px solid var(--evidence-rule);
   border-radius: 0;
-  background: var(--estate-mist);
-  color: var(--estate-ink);
+  background: var(--evidence-background);
+  color: var(--evidence-text);
   cursor: pointer;
   text-align: left;
 }
@@ -133,8 +152,9 @@ button { font: inherit; }
 .project-selector:last-child { border-block-end: 0; }
 
 .project-selector[aria-pressed="true"] {
+  color: var(--estate-ink);
   background: var(--estate-coral);
-  box-shadow: inset 5px 0 0 var(--estate-deep);
+  box-shadow: inset 5px 0 0 var(--evidence-edge);
 }
 
 .project-selector span {
@@ -150,7 +170,7 @@ button { font: inherit; }
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   min-width: 0;
-  background: var(--estate-mist-soft);
+  background: var(--evidence-raised);
 }
 
 .stage-bar {
@@ -160,13 +180,13 @@ button { font: inherit; }
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-block-end: 1px solid var(--estate-shoal);
-  background: var(--estate-mist);
+  border-block-end: 1px solid var(--evidence-rule);
+  background: var(--evidence-background);
 }
 
 .stage-description {
   max-width: 62ch;
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.92rem;
   font-weight: 650;
   line-height: 1.35;
@@ -200,7 +220,7 @@ button { font: inherit; }
 .hinge-arrow {
   display: grid;
   place-items: center;
-  color: var(--estate-deep);
+  color: var(--evidence-strong);
   font-family: var(--estate-font-heading);
   font-size: 1.75rem;
   font-weight: 800;
@@ -209,7 +229,7 @@ button { font: inherit; }
 .hinge-label {
   display: block;
   margin-block-end: 8px;
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -219,8 +239,8 @@ button { font: inherit; }
 
 .op-facts {
   display: grid;
-  border-block: 2px solid var(--estate-deep);
-  background: var(--estate-foam);
+  border-block: 2px solid var(--evidence-edge);
+  background: var(--evidence-paper);
 }
 
 .op-fact {
@@ -232,10 +252,10 @@ button { font: inherit; }
   align-items: baseline;
 }
 
-.op-fact + .op-fact { border-block-start: 1px solid var(--estate-shoal); }
+.op-fact + .op-fact { border-block-start: 1px solid var(--evidence-rule); }
 
 .op-fact small {
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.72rem;
   font-weight: 750;
 }
@@ -247,8 +267,8 @@ button { font: inherit; }
 
 .note-excerpt {
   padding: 18px 20px;
-  background: var(--estate-deep);
-  color: var(--estate-foam);
+  background: var(--evidence-output);
+  color: var(--evidence-output-text);
   font-family: var(--font-mono);
   font-size: 0.9rem;
   line-height: 1.65;
@@ -260,11 +280,12 @@ button { font: inherit; }
 .scratch-hinge { grid-template-columns: minmax(0, 0.72fr) 44px minmax(0, 1.28fr); }
 
 .capture-ticket {
-  border: 2px solid var(--estate-deep);
-  background: var(--estate-foam);
+  border: 2px solid var(--evidence-edge);
+  background: var(--evidence-paper);
 }
 
 .capture-task {
+  color: var(--estate-ink);
   padding: 12px 14px;
   background: var(--estate-coral);
   font-family: var(--estate-font-heading);
@@ -277,7 +298,7 @@ button { font: inherit; }
   flex-wrap: wrap;
   gap: 6px 14px;
   padding: 10px 14px;
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.8rem;
   font-weight: 750;
 }
@@ -288,11 +309,12 @@ button { font: inherit; }
   gap: 12px;
   padding: 14px;
   align-items: center;
-  border-block: 2px solid var(--estate-deep);
-  background: var(--estate-foam);
+  border-block: 2px solid var(--evidence-edge);
+  background: var(--evidence-paper);
 }
 
 .active-row__priority {
+  color: var(--estate-ink);
   padding: 5px 8px;
   background: var(--estate-coral);
   font-size: 0.7rem;
@@ -307,20 +329,20 @@ button { font: inherit; }
 
 .active-row small {
   display: block;
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.78rem;
 }
 
 .active-row time {
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-family: var(--font-mono);
   font-size: 0.76rem;
   font-weight: 750;
 }
 
 .confidence-facts {
-  border-block: 2px solid var(--estate-deep);
-  background: var(--estate-foam);
+  border-block: 2px solid var(--evidence-edge);
+  background: var(--evidence-paper);
 }
 
 .confidence-change {
@@ -329,11 +351,11 @@ button { font: inherit; }
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  border-block-end: 1px solid var(--estate-shoal);
+  border-block-end: 1px solid var(--evidence-rule);
 }
 
 .confidence-change strong {
-  color: var(--estate-deep);
+  color: var(--evidence-strong);
   font-family: var(--estate-font-heading);
   font-size: 1.55rem;
   line-height: 1;
@@ -341,26 +363,26 @@ button { font: inherit; }
 
 .feedback-theme {
   padding: 10px 14px;
-  color: var(--estate-channel);
+  color: var(--evidence-muted);
   font-size: 0.88rem;
 }
 
 .feedback-theme q {
-  color: var(--estate-ink);
+  color: var(--evidence-text);
   font-weight: 720;
 }
 
 .session-action {
   padding: 16px 18px;
-  border: 2px solid var(--estate-deep);
-  background: var(--estate-mist);
+  border: 2px solid var(--evidence-edge);
+  background: var(--evidence-background);
   font-family: var(--estate-font-heading);
   font-size: 1.02rem;
   font-weight: 690;
   line-height: 1.4;
 }
 
-.session-action strong { color: var(--estate-deep); }
+.session-action strong { color: var(--evidence-strong); }
 
 .chess-hinge { grid-template-columns: minmax(112px, 0.44fr) 44px minmax(0, 1.56fr); }
 
@@ -369,7 +391,7 @@ button { font: inherit; }
   min-height: 112px;
   padding: 12px;
   place-items: center;
-  border: 2px solid var(--estate-deep);
+  border: 2px solid var(--evidence-edge);
   background: var(--estate-coral);
   color: var(--estate-deep);
   font-family: var(--estate-font-heading);
@@ -379,8 +401,8 @@ button { font: inherit; }
 
 .chess-verdict {
   padding: 18px 20px;
-  background: var(--estate-deep);
-  color: var(--estate-foam);
+  background: var(--evidence-output);
+  color: var(--evidence-output-text);
   font-family: var(--font-mono);
   font-size: 0.92rem;
   line-height: 1.55;
@@ -390,9 +412,9 @@ button { font: inherit; }
 
 .site-footer {
   margin-block-start: var(--estate-space-8);
-  border-block-start: 1px solid var(--estate-shoal);
-  background: var(--estate-deep);
-  color: var(--estate-mist);
+  border-block-start: 1px solid var(--estate-rule);
+  background: var(--estate-chrome-background);
+  color: var(--estate-chrome-foreground);
 }
 
 .footer-inner {
@@ -425,18 +447,18 @@ button { font: inherit; }
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     border-inline-end: 0;
-    border-block-end: 2px solid var(--estate-deep);
+    border-block-end: 2px solid var(--evidence-edge);
   }
 
   .project-selector {
     min-height: 68px;
     padding: 12px 14px;
-    border-inline-end: 1px solid var(--estate-shoal);
+    border-inline-end: 1px solid var(--evidence-rule);
   }
 
   .project-selector:nth-child(even) { border-inline-end: 0; }
 
-  .project-selector[aria-pressed="true"] { box-shadow: inset 0 4px 0 var(--estate-deep); }
+  .project-selector[aria-pressed="true"] { box-shadow: inset 0 4px 0 var(--evidence-edge); }
 
   .project-selector span { font-size: 1rem; }
 
