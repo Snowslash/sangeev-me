@@ -53,14 +53,14 @@ test('homepage publishes canonical crawler discovery files', () => {
   }
 });
 
-test('homepage implements one unified four-project hinge window', () => {
+test('homepage implements one unified five-project hinge window', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');
   const packageJson = JSON.parse(read('../package.json'));
 
   assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Building small, practical tools\.<\/EstatePageTitle>/);
   assert.match(app, /<section[^>]*id="projects"/);
-  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "chess"/);
+  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook" \| "chess"/);
   assert.match(app, /useState<ProjectKey>\("opnotes"\)/);
   assert.match(app, /className="project-window"/);
   assert.match(app, /className="project-register"[^>]*role="group"/);
@@ -72,7 +72,7 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(app, /className="estate-primary-action stage-link"/);
   assert.doesNotMatch(app, /<button[^>]*className="[^"]*stage-link/);
   assert.match(app, /function EvidencePanel/);
-  for (const key of ['opnotes', 'scratchpad', 'aligned', 'chess']) {
+  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook', 'chess']) {
     assert.match(app, new RegExp(`case "${key}"`), `missing evidence state: ${key}`);
   }
 
@@ -84,7 +84,7 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
   assert.match(app, /https:\/\/aligned\.sangeev\.me/);
   assert.match(app, /https:\/\/github\.com\/Snowslash\/chess-coach/);
-  assert.equal(app.match(/action: "Open project ↗"/g)?.length, 3);
+  assert.equal(app.match(/action: "Open project ↗"/g)?.length, 4);
   assert.equal(app.match(/action: "View source ↗"/g)?.length, 1);
 
   for (const fixture of [
@@ -117,6 +117,17 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.4.tgz');
   assert.doesNotMatch(app, /Boundary|Each tool states its local boundary|No analytics\. No tracking\./);
   assert.match(app, /<p>Maintained by Sangeev<\/p>/);
+});
+
+test('Casebook links its landing and shows only the source-grounded static filter result', () => {
+  const app = read('../src/App.tsx');
+  assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook", "chess"\]/);
+  assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
+  assert.match(app, /ariaLabel: "Open Casebook"/);
+  const specimen = app.split('case "casebook":')[1]?.split('case "chess":')[0] ?? '';
+  for (const text of ['Static example', 'Performed', 'February 2026', 'Synthetic procedure A', 'Source rows 5 and 6', 'Duplicate retained']) assert.ok(specimen.includes(text), text);
+  assert.doesNotMatch(specimen, /<input|<select|<button|competenc|score/i);
+  assert.match(read('../README.md'), /https:\/\/casebook\.sangeev\.me\//);
 });
 
 test('evidence retains light tokens without overriding shared theme focus', () => {

@@ -7,7 +7,7 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "chess";
+type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "chess";
 
 type ProjectRecord = {
   name: string;
@@ -39,6 +39,13 @@ const projects: Record<ProjectKey, ProjectRecord> = {
     action: "Open project ↗",
     ariaLabel: "Open AlignEd",
   },
+  casebook: {
+    name: "Casebook",
+    description: "Explore an operative logbook with filters and source-row traceability.",
+    href: "https://casebook.sangeev.me/",
+    action: "Open project ↗",
+    ariaLabel: "Open Casebook",
+  },
   chess: {
     name: "Chess Coach",
     description: "Local-first chess analysis with Stockfish and optional Maia context.",
@@ -48,7 +55,7 @@ const projects: Record<ProjectKey, ProjectRecord> = {
   },
 };
 
-const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "chess"];
+const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "chess"];
 
 function EvidencePanel({ project }: { project: ProjectKey }) {
   switch (project) {
@@ -106,6 +113,27 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
           <div className="hinge-effect">
             <span className="hinge-label">Next-session action</span>
             <p className="session-action"><strong>Allow a longer practical station</strong> and repeat the confidence measure.</p>
+          </div>
+        </div>
+      );
+
+    case "casebook":
+      return (
+        <div className="hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Static example · Filters</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>Role</small><strong>Performed</strong></div>
+              <div className="op-fact"><small>Month</small><strong>February 2026</strong></div>
+            </div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Matching rows</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>Source rows 5 and 6</small><strong>Synthetic procedure A</strong></div>
+              <p>Duplicate retained</p>
+            </div>
           </div>
         </div>
       );
