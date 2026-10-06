@@ -56,14 +56,14 @@ test('homepage publishes canonical crawler discovery files', () => {
   }
 });
 
-test('homepage implements one unified five-project hinge window', () => {
+test('homepage implements one unified four-project hinge window', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');
   const packageJson = JSON.parse(read('../package.json'));
 
   assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Building small, practical tools\.<\/EstatePageTitle>/);
   assert.match(app, /<section[^>]*id="projects"/);
-  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook" \| "chess"/);
+  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook";/);
   assert.match(app, /useState<ProjectKey>\("opnotes"\)/);
   assert.match(app, /className="project-window"/);
   assert.match(app, /className="project-register"[^>]*role="group"/);
@@ -75,20 +75,19 @@ test('homepage implements one unified five-project hinge window', () => {
   assert.match(app, /className="estate-primary-action stage-link"/);
   assert.doesNotMatch(app, /<button[^>]*className="[^"]*stage-link/);
   assert.match(app, /function EvidencePanel/);
-  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook', 'chess']) {
+  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook']) {
     assert.match(app, new RegExp(`case "${key}"`), `missing evidence state: ${key}`);
   }
 
   assert.match(app, /Structured drafts for common emergency general-surgery operation notes\./);
   assert.match(app, /A temporary ward-job list for busy clinical shifts\./);
   assert.match(app, /Local-first teaching evidence and portfolio exports\./);
-  assert.match(app, /Local-first chess analysis with Stockfish and optional Maia context\./);
+
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
   assert.match(app, /https:\/\/aligned\.sangeev\.me/);
-  assert.match(app, /https:\/\/github\.com\/Snowslash\/chess-coach/);
   assert.equal(app.match(/action: "Open project ↗"/g)?.length, 4);
-  assert.equal(app.match(/action: "View source ↗"/g)?.length, 1);
+  assert.doesNotMatch(app, /action: "View source ↗"/);
 
   for (const fixture of [
     'Purulent fluid',
@@ -96,8 +95,7 @@ test('homepage implements one unified five-project hinge window', () => {
     'Chase CT',
     '2.5 → 4.0',
     'More time with suturing',
-    '3...Nf6??',
-    'Missed the mate threat on f7.',
+
   ]) {
     assert.ok(app.includes(fixture), `missing fixture evidence: ${fixture}`);
   }
@@ -140,6 +138,12 @@ test('homepage opts into Projects and GitHub navigation while retaining the shar
   assert.match(html, /aria-label="Switch to light mode"/);
 });
 
+test('homepage omits Chess Coach and its retired specimen styles', () => {
+  assert.doesNotMatch(read('../src/App.tsx'), /chess|Stockfish|Maia|3\.\.\.Nf6|played-move/i);
+  assert.doesNotMatch(read('../src/styles.css'), /chess|played-move/i);
+  assert.doesNotMatch(read('../index.html'), /chess-coach|Chess Coach/i);
+});
+
 test('shared package MIT notice is copied into the public artifact', () => {
   const canonical = read('../node_modules/@sangeev/estate-ui/LICENSE');
   assert.match(canonical, /MIT License/);
@@ -150,10 +154,10 @@ test('shared package MIT notice is copied into the public artifact', () => {
 
 test('Casebook links its landing and shows only the source-grounded static filter result', () => {
   const app = read('../src/App.tsx');
-  assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook", "chess"\]/);
+  assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook"\]/);
   assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open Casebook"/);
-  const specimen = app.split('case "casebook":')[1]?.split('case "chess":')[0] ?? '';
+  const specimen = app.match(/case "casebook":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
   for (const text of ['Static example', 'Performed', 'February 2026', 'Synthetic procedure A', 'Source rows 5 and 6', 'Duplicate retained']) assert.ok(specimen.includes(text), text);
   assert.doesNotMatch(specimen, /<input|<select|<button|competenc|score/i);
   assert.match(read('../README.md'), /https:\/\/casebook\.sangeev\.me\//);

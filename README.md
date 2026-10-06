@@ -5,7 +5,7 @@ Static React project hub for Sangeev’s small clinical tools and coding project
 Live site: https://sangeev.me
 Source: https://github.com/Snowslash/sangeev-me
 
-The site is intentionally plain: a short personal index followed by one evidence-led Projects register. Five project choices share one bounded window with static examples. The shared header's `navigation="projects"` option keeps only Projects and GitHub in the main site's navigation; the wordmark and theme toggle remain. Individual project sites retain their existing headers. It should not become a portfolio funnel, analytics surface or backend application.
+The site is intentionally plain: a short personal index followed by one evidence-led Projects register. Four project choices—Operation Note Generator, Clinical Shift Scratchpad, AlignEd and Casebook—share one bounded window with static examples. The shared header's `navigation="projects"` option keeps only Projects and GitHub in the navigation; the wordmark and theme toggle remain. It should not become a portfolio funnel, analytics surface or backend application.
 
 ## Hosted projects linked from the hub
 
@@ -39,9 +39,9 @@ npm run check
 
 ## Project layout
 
-- `src/App.tsx` — five-project evidence register composed with package-owned estate primitives
+- `src/App.tsx` — four-project evidence register composed with package-owned estate primitives
 - `src/styles.css` — page-specific Evidence Window composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
-- `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact; only this consumer adopts the new header option
+- `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
 - `public/_headers` — Cloudflare static-asset security headers copied into the build
 - `public/licenses/` — shared-package MIT and bundled-font OFL notices, copied into the build
 - `docs/` — generated production output

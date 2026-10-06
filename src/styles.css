@@ -384,32 +384,6 @@ button { font: inherit; }
 
 .session-action strong { color: var(--evidence-strong); }
 
-.chess-hinge { grid-template-columns: minmax(112px, 0.44fr) 44px minmax(0, 1.56fr); }
-
-.played-move {
-  display: grid;
-  min-height: 112px;
-  padding: 12px;
-  place-items: center;
-  border: 2px solid var(--evidence-edge);
-  background: var(--estate-coral);
-  color: var(--estate-deep);
-  font-family: var(--estate-font-heading);
-  font-size: 2rem;
-  font-weight: 800;
-}
-
-.chess-verdict {
-  padding: 18px 20px;
-  background: var(--evidence-output);
-  color: var(--evidence-output-text);
-  font-family: var(--font-mono);
-  font-size: 0.92rem;
-  line-height: 1.55;
-}
-
-.chess-verdict strong { color: var(--estate-coral); }
-
 .site-footer {
   margin-block-start: var(--estate-space-8);
   border-block-start: 1px solid var(--estate-rule);
@@ -482,8 +456,7 @@ button { font: inherit; }
   }
 
   .hinge,
-  .scratch-hinge,
-  .chess-hinge {
+  .scratch-hinge {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
   }
@@ -494,8 +467,6 @@ button { font: inherit; }
     justify-self: center;
     transform: rotate(90deg);
   }
-
-  .played-move { min-height: 82px; }
 
   .footer-inner {
     align-items: flex-start;
@@ -532,7 +503,6 @@ button { font: inherit; }
   .active-row,
   .confidence-facts,
   .session-action,
-  .played-move,
   .site-footer {
     border-color: CanvasText;
   }

@@ -7,7 +7,7 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "chess";
+type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook";
 
 type ProjectRecord = {
   name: string;
@@ -46,16 +46,9 @@ const projects: Record<ProjectKey, ProjectRecord> = {
     action: "Open project ↗",
     ariaLabel: "Open Casebook",
   },
-  chess: {
-    name: "Chess Coach",
-    description: "Local-first chess analysis with Stockfish and optional Maia context.",
-    href: "https://github.com/Snowslash/chess-coach",
-    action: "View source ↗",
-    ariaLabel: "View Chess Coach source",
-  },
 };
 
-const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "chess"];
+const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook"];
 
 function EvidencePanel({ project }: { project: ProjectKey }) {
   switch (project) {
@@ -138,20 +131,6 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
         </div>
       );
 
-    case "chess":
-      return (
-        <div className="hinge chess-hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">Played move</span>
-            <div className="played-move">3...Nf6??</div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">Coaching note</span>
-            <p className="chess-verdict">Missed the mate threat on f7. <strong>Best: 3...g6.</strong></p>
-          </div>
-        </div>
-      );
   }
 }
 
