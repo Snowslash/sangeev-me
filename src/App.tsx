@@ -162,7 +162,7 @@ function App() {
 
   return (
     <>
-      <PublicEstateHeader current="home" theme={theme} onToggleTheme={toggleTheme} />
+      <PublicEstateHeader current="home" navigation="projects" theme={theme} onToggleTheme={toggleTheme} />
       <EstateShell variant="landing">
         <main className="root-page" id="main-content">
           <section className="intro" aria-labelledby="page-title">

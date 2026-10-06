@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { PublicEstateHeader } from '@sangeev/estate-ui';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const fontLicenses = ['OFL-Atkinson-Hyperlegible-Next.txt', 'OFL-Literata.txt'];
@@ -114,9 +117,35 @@ test('homepage implements one unified five-project hinge window', () => {
   assert.match(styles, /\.hinge-arrow/);
   assert.doesNotMatch(styles, /\.provenance/);
   assert.doesNotMatch(styles, /\.state-tabs|\.record-rows|\.record-row|\.project-evidence/);
-  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.4.tgz');
+  assert.equal(packageJson.dependencies['@sangeev/estate-ui'], 'file:vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz');
   assert.doesNotMatch(app, /Boundary|Each tool states its local boundary|No analytics\. No tracking\./);
   assert.match(app, /<p>Maintained by Sangeev<\/p>/);
+});
+
+test('homepage opts into Projects and GitHub navigation while retaining the shared wordmark and theme control', () => {
+  const app = read('../src/App.tsx');
+  const headerProps = app.match(/<PublicEstateHeader\b([^>]*)\/>/)?.[1] ?? '';
+  assert.match(headerProps, /navigation="projects"/);
+  assert.doesNotMatch(read('../src/styles.css'), /\.estate-site-header\b/);
+  const html = renderToStaticMarkup(createElement(PublicEstateHeader, {
+    current: 'home', navigation: 'projects', theme: 'dark', onToggleTheme() {},
+  }));
+  const navigation = html.match(/<nav\b[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  assert.deepEqual([...navigation.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), [
+    'https://sangeev.me/#projects', 'https://github.com/Snowslash',
+  ]);
+  assert.match(navigation, />Projects<\/a>/);
+  assert.match(navigation, /aria-label="GitHub"/);
+  assert.match(html, /class="estate-wordmark"[^>]*href="https:\/\/sangeev.me"/);
+  assert.match(html, /aria-label="Switch to light mode"/);
+});
+
+test('shared package MIT notice is copied into the public artifact', () => {
+  const canonical = read('../node_modules/@sangeev/estate-ui/LICENSE');
+  assert.match(canonical, /MIT License/);
+  for (const directory of ['public', 'docs']) {
+    assert.equal(read(`../${directory}/licenses/MIT-estate-ui.txt`), canonical);
+  }
 });
 
 test('Casebook links its landing and shows only the source-grounded static filter result', () => {
