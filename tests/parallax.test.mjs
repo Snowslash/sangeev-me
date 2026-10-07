@@ -1,44 +1,49 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+const parallaxSpecimen = () => read('../src/App.tsx').match(/case "parallax":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
 
-// Parallax initial public release, guided challenge 1. The wire is unchanged between views.
-const projections = {
-  'c1-000.png': '16773e7fbcdc26c44bbff7c636dc986f72d3e8c0f0735fcc209c98f53520159d',
-  'c1-060.png': 'c4a7bc54ec367795594e48aeb8ef3bdbfebbd73a3d99dcca45d7628b9d71e13e',
-};
+// Guided challenge c1: the same fixed wire, viewed at 0° and 60°.
+// These observations concern its projection, not geometric containment or safety.
+test('Parallax uses the shared text hinge for two views of the same fixed wire', () => {
+  const specimen = parallaxSpecimen();
+  assert.match(specimen, /className="hinge"/);
+  assert.match(specimen, /className="hinge-cause"/);
+  assert.match(specimen, /className="hinge-effect"/);
+  assert.match(specimen, /className="hinge-arrow" aria-hidden="true">→/);
+  assert.match(specimen, /className="hinge-label">First view<\/span>/);
+  assert.match(specimen, /className="hinge-label">Additional view<\/span>/);
+  assert.equal(specimen.match(/className="op-facts"/g)?.length, 2);
+  assert.equal(specimen.match(/className="op-fact"/g)?.length, 4);
+  assert.match(specimen, /<small>View<\/small><strong>0°<\/strong>/);
+  assert.match(specimen, /<small>Tip<\/small><strong>Within the outline<\/strong>/);
+  assert.match(specimen, /<small>View<\/small><strong>60°<\/strong>/);
+  assert.match(specimen, /<small>Tip<\/small><strong>Beyond the outline<\/strong>/);
+  assert.doesNotMatch(specimen, /<(?:img|picture|canvas|svg|iframe|button|input|select|textarea)\b/i);
+  assert.doesNotMatch(specimen, /\b(?:safe|unsafe|contained|containment|breach|universally)\b/i);
+});
 
-test('Parallax previews the published projections and opens its existing landing page', () => {
+test('Parallax retains its project destination and fixture provenance', () => {
   const app = read('../src/App.tsx');
   assert.match(app, /name: "Parallax"/);
   assert.match(app, /href: "https:\/\/parallax\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open Parallax"/);
-  const specimen = app.match(/case "parallax":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
-  assert.match(specimen, /0° view/);
-  assert.match(specimen, /60° view/);
-  assert.equal(specimen.match(/<img\b/g)?.length, 2);
-  assert.equal(specimen.match(/width="256" height="256"/g)?.length, 2);
-  assert.equal(specimen.match(/alt="[^"]+"/g)?.length, 2);
-  assert.doesNotMatch(specimen, /<canvas|<iframe|<button|clinical safety|universally/i);
-  assert.match(read('../README.md'), /https:\/\/parallax\.sangeev\.me\//);
+  const readme = read('../README.md');
+  assert.match(readme, /https:\/\/parallax\.sangeev\.me\//);
+  assert.match(readme, /same fixed wire/);
+  assert.match(readme, /c1/);
+  assert.match(readme, /0°/);
+  assert.match(readme, /60°/);
 });
 
-test('Parallax image bytes and licence are preserved without a runtime dependency', () => {
-  for (const [name, sha] of Object.entries(projections)) {
-    const file = new URL(`../src/assets/parallax/${name}`, import.meta.url);
-    assert.ok(existsSync(file), `missing published projection: ${name}`);
-    const bytes = readFileSync(file);
-    assert.equal(createHash('sha256').update(bytes).digest('hex'), sha);
-    assert.equal(bytes.readUInt32BE(16), 256);
-    assert.equal(bytes.readUInt32BE(20), 256);
-    assert.ok(read('../src/App.tsx').includes(`./assets/parallax/${name}?no-inline`), 'Vite must emit a fingerprinted asset');
+test('unused Parallax projection assets, imports and styles are removed', () => {
+  for (const path of ['../src/assets/parallax/c1-000.png', '../src/assets/parallax/c1-060.png', '../public/licenses/MIT-Parallax.txt']) {
+    assert.equal(existsSync(new URL(path, import.meta.url)), false, `unused file remains: ${path}`);
   }
-  const licence = read('../public/licenses/MIT-Parallax.txt');
-  assert.match(licence, /Copyright \(c\) 2026 Parallax contributors/);
-  assert.match(licence, /THE SOFTWARE IS PROVIDED "AS IS"/);
+  assert.doesNotMatch(read('../src/App.tsx'), /parallaxView|assets\/parallax|projection-comparison|projection-preview|projection-caption|parallax-hinge/);
+  assert.doesNotMatch(read('../src/styles.css'), /projection-comparison|projection-preview|projection-caption|parallax-hinge/);
 });
 
 test('Parallax remains discoverable without JavaScript', () => {

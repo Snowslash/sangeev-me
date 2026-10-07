@@ -6,8 +6,6 @@ import {
   PublicEstateHeader,
   useEstateTheme,
 } from "@sangeev/estate-ui";
-import parallaxView0 from "./assets/parallax/c1-000.png?no-inline";
-import parallaxView60 from "./assets/parallax/c1-060.png?no-inline";
 
 type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax";
 
@@ -142,19 +140,22 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
 
     case "parallax":
       return (
-        <div className="projection-comparison">
-          <div className="hinge parallax-hinge">
-            <figure className="projection-preview">
-              <figcaption className="hinge-label">0° view</figcaption>
-              <img src={parallaxView0} width="256" height="256" alt="Wire projects within the cylinder outline at 0 degrees." />
-            </figure>
-            <div className="hinge-arrow" aria-hidden="true">→</div>
-            <figure className="projection-preview">
-              <figcaption className="hinge-label">60° view</figcaption>
-              <img src={parallaxView60} width="256" height="256" alt="The same wire tip projects beyond the right edge at 60 degrees." />
-            </figure>
+        <div className="hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">First view</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>View</small><strong>0°</strong></div>
+              <div className="op-fact"><small>Tip</small><strong>Within the outline</strong></div>
+            </div>
           </div>
-          <p className="projection-caption">The wire stays still; the view changes.</p>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">Additional view</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>View</small><strong>60°</strong></div>
+              <div className="op-fact"><small>Tip</small><strong>Beyond the outline</strong></div>
+            </div>
+          </div>
         </div>
       );
   }

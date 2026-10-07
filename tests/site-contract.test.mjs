@@ -103,7 +103,7 @@ test('homepage implements one unified five-project hinge window', () => {
 
   assert.doesNotMatch(app, /ProjectView|Tools view selected|Workbench view selected|state-tabs|record-rows|record-row|className="project-evidence"/);
   assert.doesNotMatch(app, /assets\/evidence|View project/);
-  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook']) {
+  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook', 'parallax']) {
     const specimen = app.match(new RegExp(`case "${key}":([\\s\\S]*?)\\n\\s*\\);`))?.[1] ?? '';
     assert.doesNotMatch(specimen, /<img/, `${key} keeps its text specimen`);
   }

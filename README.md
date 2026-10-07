@@ -41,11 +41,10 @@ npm run check
 ## Project layout
 
 - `src/App.tsx` — five-project evidence register composed with package-owned estate primitives
-- `src/assets/parallax/` — unmodified 0° and 60° projections from [Parallax's first guided challenge](https://github.com/Snowslash/parallax/tree/7b3e890640e37bd48596b1c6fc60e02e285508b0/demo/assets/v2); Vite emits fingerprinted copies
 - `src/styles.css` — page-specific Evidence Window composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
 - `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
 - `public/_headers` — Cloudflare static-asset security headers copied into the build
-- `public/licenses/` — shared-package and Parallax MIT notices plus bundled-font OFL notices, copied into the build
+- `public/licenses/` — shared-package MIT notice plus bundled-font OFL notices, copied into the build
 - `docs/` — generated production output
 - `scripts/audit-public-tokens.py` — cross-repo token consistency check when sibling repos are present
 
@@ -61,6 +60,8 @@ Cloudflare Worker auto-deploys the checked-in `docs/` artifact from `main`; `wra
 - Canonical redirect: `www.sangeev.me` → `sangeev.me`
 
 ## Design boundary
+
+Parallax uses the same compact text-based before → after specimen as the other project panels. Its observations come from [guided challenge c1](https://github.com/Snowslash/parallax/tree/7b3e890640e37bd48596b1c6fc60e02e285508b0/demo/assets/v2): the same fixed wire tip projects within the cylinder outline at 0° and beyond the right outline at 60°. These are projected appearances, not claims about geometric containment or safety. The homepage embeds no Parallax images or interactive lab controls.
 
 The candidate public-estate language uses Evidence Window structure, the Drenched Atlas palette and Field Ledger typography: full-bleed dark estate chrome, bounded pale working surfaces, Literata headings, Atkinson body/UI text, attached register tabs and square ruled construction. Avoid gradients, glass cards, generic dashboard grids, fake evidence, social proof and tracking scripts.
 
