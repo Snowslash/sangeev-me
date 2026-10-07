@@ -56,14 +56,14 @@ test('homepage publishes canonical crawler discovery files', () => {
   }
 });
 
-test('homepage implements one unified four-project hinge window', () => {
+test('homepage implements one unified five-project hinge window', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');
   const packageJson = JSON.parse(read('../package.json'));
 
   assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Building small, practical tools\.<\/EstatePageTitle>/);
   assert.match(app, /<section[^>]*id="projects"/);
-  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook";/);
+  assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook" \| "parallax";/);
   assert.match(app, /useState<ProjectKey>\("opnotes"\)/);
   assert.match(app, /className="project-window"/);
   assert.match(app, /className="project-register"[^>]*role="group"/);
@@ -75,7 +75,7 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(app, /className="estate-primary-action stage-link"/);
   assert.doesNotMatch(app, /<button[^>]*className="[^"]*stage-link/);
   assert.match(app, /function EvidencePanel/);
-  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook']) {
+  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook', 'parallax']) {
     assert.match(app, new RegExp(`case "${key}"`), `missing evidence state: ${key}`);
   }
 
@@ -86,7 +86,7 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
   assert.match(app, /https:\/\/aligned\.sangeev\.me/);
-  assert.equal(app.match(/action: "Open project ↗"/g)?.length, 4);
+  assert.equal(app.match(/action: "Open project ↗"/g)?.length, 5);
   assert.doesNotMatch(app, /action: "View source ↗"/);
 
   for (const fixture of [
@@ -102,7 +102,11 @@ test('homepage implements one unified four-project hinge window', () => {
   assert.doesNotMatch(app, /provenance:|className="provenance"|Synthetic fixture|Synthetic demo|Synthetic training fixture|Fixture-backed examples/);
 
   assert.doesNotMatch(app, /ProjectView|Tools view selected|Workbench view selected|state-tabs|record-rows|record-row|className="project-evidence"/);
-  assert.doesNotMatch(app, /assets\/evidence|<img|View project/);
+  assert.doesNotMatch(app, /assets\/evidence|View project/);
+  for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook']) {
+    const specimen = app.match(new RegExp(`case "${key}":([\\s\\S]*?)\\n\\s*\\);`))?.[1] ?? '';
+    assert.doesNotMatch(specimen, /<img/, `${key} keeps its text specimen`);
+  }
   for (const staleAsset of ['opnotes-app.webp', 'scratchpad-app.webp', 'aligned-app.webp']) {
     assert.equal(existsSync(new URL(`../src/assets/evidence/${staleAsset}`, import.meta.url)), false, `unused screenshot evidence remains: ${staleAsset}`);
   }
@@ -154,7 +158,7 @@ test('shared package MIT notice is copied into the public artifact', () => {
 
 test('Casebook links its landing and shows only the source-grounded static filter result', () => {
   const app = read('../src/App.tsx');
-  assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook"\]/);
+  assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook", "parallax"\]/);
   assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open Casebook"/);
   const specimen = app.match(/case "casebook":([\s\S]*?)\n\s*\);/)?.[1] ?? '';

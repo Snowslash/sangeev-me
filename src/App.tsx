@@ -6,8 +6,10 @@ import {
   PublicEstateHeader,
   useEstateTheme,
 } from "@sangeev/estate-ui";
+import parallaxView0 from "./assets/parallax/c1-000.png?no-inline";
+import parallaxView60 from "./assets/parallax/c1-060.png?no-inline";
 
-type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook";
+type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax";
 
 type ProjectRecord = {
   name: string;
@@ -46,9 +48,16 @@ const projects: Record<ProjectKey, ProjectRecord> = {
     action: "Open project ↗",
     ariaLabel: "Open Casebook",
   },
+  parallax: {
+    name: "Parallax",
+    description: "A browser lab for understanding X-ray views and 3D geometry.",
+    href: "https://parallax.sangeev.me/",
+    action: "Open project ↗",
+    ariaLabel: "Open Parallax",
+  },
 };
 
-const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook"];
+const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "parallax"];
 
 function EvidencePanel({ project }: { project: ProjectKey }) {
   switch (project) {
@@ -131,6 +140,23 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
         </div>
       );
 
+    case "parallax":
+      return (
+        <div className="projection-comparison">
+          <div className="hinge parallax-hinge">
+            <figure className="projection-preview">
+              <figcaption className="hinge-label">0° view</figcaption>
+              <img src={parallaxView0} width="256" height="256" alt="Wire projects within the cylinder outline at 0 degrees." />
+            </figure>
+            <div className="hinge-arrow" aria-hidden="true">→</div>
+            <figure className="projection-preview">
+              <figcaption className="hinge-label">60° view</figcaption>
+              <img src={parallaxView60} width="256" height="256" alt="The same wire tip projects beyond the right edge at 60 degrees." />
+            </figure>
+          </div>
+          <p className="projection-caption">The wire stays still; the view changes.</p>
+        </div>
+      );
   }
 }
 
