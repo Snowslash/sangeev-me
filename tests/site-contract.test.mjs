@@ -35,7 +35,7 @@ test('homepage deploys the reviewed docs artifact as a minimal Cloudflare Worker
   assert.deepEqual(wrangler.observability, { enabled: false });
   assert.deepEqual(wrangler.assets, {
     directory: './docs',
-    not_found_handling: 'single-page-application',
+    not_found_handling: '404-page',
   });
 });
 
@@ -160,7 +160,7 @@ test('Casebook links its landing and shows only the source-grounded static filte
   const app = read('../src/App.tsx');
   assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook", "parallax"\]/);
   assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
-  assert.match(app, /ariaLabel: "Open Casebook"/);
+  assert.match(app, /ariaLabel: "Open project: Casebook"/);
   const specimen = app.match(/case "casebook":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
   for (const text of ['Static example', 'Performed', 'February 2026', 'Synthetic procedure A', 'Source rows 5 and 6', 'Duplicate retained']) assert.ok(specimen.includes(text), text);
   assert.doesNotMatch(specimen, /<input|<select|<button|competenc|score/i);

@@ -23,35 +23,35 @@ const projects: Record<ProjectKey, ProjectRecord> = {
     description: "Structured drafts for common emergency general-surgery operation notes.",
     href: "https://opnotes.sangeev.me",
     action: "Open project ↗",
-    ariaLabel: "Open Operation Note Generator",
+    ariaLabel: "Open project: Operation Note Generator",
   },
   scratchpad: {
     name: "Clinical Shift Scratchpad",
     description: "A temporary ward-job list for busy clinical shifts.",
     href: "https://scratchpad.sangeev.me",
     action: "Open project ↗",
-    ariaLabel: "Open Clinical Shift Scratchpad",
+    ariaLabel: "Open project: Clinical Shift Scratchpad",
   },
   aligned: {
     name: "AlignEd",
     description: "Local-first teaching evidence and portfolio exports.",
     href: "https://aligned.sangeev.me",
     action: "Open project ↗",
-    ariaLabel: "Open AlignEd",
+    ariaLabel: "Open project: AlignEd",
   },
   casebook: {
     name: "Casebook",
     description: "Explore an operative logbook with filters and source-row traceability.",
     href: "https://casebook.sangeev.me/",
     action: "Open project ↗",
-    ariaLabel: "Open Casebook",
+    ariaLabel: "Open project: Casebook",
   },
   parallax: {
     name: "Parallax",
     description: "A browser lab for understanding X-ray views and 3D geometry.",
     href: "https://parallax.sangeev.me/",
     action: "Open project ↗",
-    ariaLabel: "Open Parallax",
+    ariaLabel: "Open project: Parallax",
   },
 };
 
@@ -209,6 +209,11 @@ function App() {
                 </div>
               </article>
             </div>
+            <nav className="project-links" aria-label="Project pages">
+              {projectOrder.map((key) => (
+                <a key={key} href={projects[key].href}>{projects[key].name}</a>
+              ))}
+            </nav>
           </section>
         </main>
       </EstateShell>

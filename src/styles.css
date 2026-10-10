@@ -384,6 +384,19 @@ button { font: inherit; }
 
 .session-action strong { color: var(--evidence-strong); }
 
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--estate-space-2) var(--estate-space-5);
+  margin-block-start: var(--estate-space-5);
+}
+
+.project-links a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
 .site-footer {
   margin-block-start: var(--estate-space-8);
   border-block-start: 1px solid var(--estate-rule);

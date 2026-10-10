@@ -29,7 +29,7 @@ test('Parallax retains its project destination and fixture provenance', () => {
   const app = read('../src/App.tsx');
   assert.match(app, /name: "Parallax"/);
   assert.match(app, /href: "https:\/\/parallax\.sangeev\.me\/"/);
-  assert.match(app, /ariaLabel: "Open Parallax"/);
+  assert.match(app, /ariaLabel: "Open project: Parallax"/);
   const readme = read('../README.md');
   assert.match(readme, /https:\/\/parallax\.sangeev\.me\//);
   assert.match(readme, /same fixed wire/);
