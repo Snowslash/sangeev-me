@@ -66,3 +66,9 @@ Parallax uses the same compact text-based before → after specimen as the other
 The candidate public-estate language uses Evidence Window structure, the Drenched Atlas palette and Field Ledger typography: full-bleed dark estate chrome, bounded pale working surfaces, Literata headings, Atkinson body/UI text, attached register tabs and square ruled construction. Avoid gradients, glass cards, generic dashboard grids, fake evidence, social proof and tracking scripts.
 
 Clinical-adjacent pages should keep active safety/privacy wording near the primary action. Do not add patient-data storage, analytics or third-party scripts without redesigning the safety model.
+
+## Licence
+
+Original project code is licensed under the [MIT License](LICENSE), copyright © 2026 Sangeev Ravimohan.
+
+Third-party dependencies and bundled assets retain their own licences. The shared estate UI and font notices remain in [`public/licenses/`](public/licenses/), alongside the project's MIT notice; all are copied into the static build's `licenses/` directory.
