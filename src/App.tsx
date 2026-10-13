@@ -7,7 +7,7 @@ import {
   useEstateTheme,
 } from "@sangeev/estate-ui";
 
-type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax";
+type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax" | "glassbox";
 
 type ProjectRecord = {
   name: string;
@@ -53,9 +53,16 @@ const projects: Record<ProjectKey, ProjectRecord> = {
     action: "Open project ↗",
     ariaLabel: "Open project: Parallax",
   },
+  glassbox: {
+    name: "Glassbox",
+    description: "Recorded physiology experiments in blood pressure, oxygen transport and breathing.",
+    href: "https://glassbox.sangeev.me/",
+    action: "Open project ↗",
+    ariaLabel: "Open project: Glassbox",
+  },
 };
 
-const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "parallax"];
+const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "parallax", "glassbox"];
 
 function EvidencePanel({ project }: { project: ProjectKey }) {
   switch (project) {
@@ -158,6 +165,27 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
           </div>
         </div>
       );
+
+    case "glassbox":
+      return (
+        <div className="hinge">
+          <div className="hinge-cause">
+            <span className="hinge-label">Before blood loss</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>Blood volume</small><strong>5,487 mL</strong></div>
+              <div className="op-fact"><small>Mean arterial pressure</small><strong>95.3 mmHg</strong></div>
+            </div>
+          </div>
+          <div className="hinge-arrow" aria-hidden="true">→</div>
+          <div className="hinge-effect">
+            <span className="hinge-label">At 550 s</span>
+            <div className="op-facts">
+              <div className="op-fact"><small>Blood volume</small><strong>4,685 mL</strong></div>
+              <div className="op-fact"><small>Mean arterial pressure</small><strong>94.2 mmHg</strong></div>
+            </div>
+          </div>
+        </div>
+      );
   }
 }
 
@@ -209,11 +237,6 @@ function App() {
                 </div>
               </article>
             </div>
-            <nav className="project-links" aria-label="Project pages">
-              {projectOrder.map((key) => (
-                <a key={key} href={projects[key].href}>{projects[key].name}</a>
-              ))}
-            </nav>
           </section>
         </main>
       </EstateShell>

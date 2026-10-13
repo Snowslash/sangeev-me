@@ -5,7 +5,7 @@ Static React project hub for Sangeev’s small clinical tools and coding project
 Live site: https://sangeev.me
 Source: https://github.com/Snowslash/sangeev-me
 
-The site is intentionally plain: a short personal index followed by one evidence-led Projects register. Five project choices—Operation Note Generator, Clinical Shift Scratchpad, AlignEd, Casebook and Parallax—share one bounded window with static examples. The shared header's `navigation="projects"` option keeps only Projects and GitHub in the navigation; the wordmark and theme toggle remain. It should not become a portfolio funnel, analytics surface or backend application.
+The site is intentionally plain: a short personal index followed by one evidence-led Projects register. Six project choices—Operation Note Generator, Clinical Shift Scratchpad, AlignEd, Casebook, Parallax and Glassbox—share one bounded window with static examples. The selected panel has one Open project action; there is no duplicate project-link row below the window. Ordinary links to all six projects remain in the initial HTML fallback for visitors without JavaScript. The shared header's `navigation="projects"` option keeps only Projects and GitHub in the navigation; the wordmark and theme toggle remain. It should not become a portfolio funnel, analytics surface or backend application.
 
 ## Hosted projects linked from the hub
 
@@ -14,6 +14,7 @@ The site is intentionally plain: a short personal index followed by one evidence
 - https://aligned.sangeev.me — local-first teaching evidence and portfolio exports
 - https://casebook.sangeev.me/ — operative logbook explorer project page
 - https://parallax.sangeev.me/ — X-ray projection geometry lab
+- https://glassbox.sangeev.me/ — recorded physiology experiments
 
 Important clinical workflow tools are kept in separate repositories/deployments so a homepage change cannot break a runnable tool.
 
@@ -40,7 +41,7 @@ npm run check
 
 ## Project layout
 
-- `src/App.tsx` — five-project evidence register composed with package-owned estate primitives
+- `src/App.tsx` — six-project evidence register composed with package-owned estate primitives
 - `src/styles.css` — page-specific Evidence Window composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
 - `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
 - `public/_headers` — Cloudflare static-asset security headers copied into the build
@@ -62,6 +63,8 @@ Cloudflare Worker auto-deploys the checked-in `docs/` artifact from `main`; `wra
 ## Design boundary
 
 Parallax uses the same compact text-based before → after specimen as the other project panels. Its observations come from [guided challenge c1](https://github.com/Snowslash/parallax/tree/7b3e890640e37bd48596b1c6fc60e02e285508b0/demo/assets/v2): the same fixed wire tip projects within the cylinder outline at 0° and beyond the right outline at 60°. These are projected appearances, not claims about geometric containment or safety. The homepage embeds no Parallax images or interactive lab controls.
+
+Glassbox also uses a static text specimen, not an embedded or live simulation. Its values are taken from the fictional Pulse blood-loss recording in [the pinned Glassbox lesson data](https://github.com/Snowslash/glassbox/blob/db2aaec7ff7725d9aaa187c5fc416d3d8930b2e4/evidence/engine/lesson-data.json): `runs.bleed.samples`, at elapsed 0 and approximately 550 s. Blood volume is rounded to whole mL (5,487 → 4,685); the engine-reported mean arterial pressure is rounded to one decimal place in mmHg (95.3 → 94.2). These are exported observations, not evidence of a causal mechanism, clinical cut-offs or patient measurements. The project action opens Glassbox's overview; its lessons and Model details retain the fuller explanation and limitations. No simulation assets, dependencies or clinical inputs are loaded by the homepage.
 
 The candidate public-estate language uses Evidence Window structure, the Drenched Atlas palette and Field Ledger typography: full-bleed dark estate chrome, bounded pale working surfaces, Literata headings, Atkinson body/UI text, attached register tabs and square ruled construction. Avoid gradients, glass cards, generic dashboard grids, fake evidence, social proof and tracking scripts.
 
