@@ -60,6 +60,24 @@ Cloudflare Worker auto-deploys the checked-in `docs/` artifact from `main`; `wra
 - Custom domains: `sangeev.me` and `www.sangeev.me`
 - Canonical redirect: `www.sangeev.me` → `sangeev.me`
 
+## Dependency security maintenance — 2026-10-13
+
+The full npm audit initially reported three high-severity affected packages across five distinct advisories. A targeted `npm update nanoid postcss source-map-js --package-lock-only --ignore-scripts` changed only these transitive lockfile entries within their existing parent ranges:
+
+| Package | Before | After | Advisory patch baseline |
+| --- | --- | --- | --- |
+| nanoid | 3.3.15 | 3.3.20 | 3.3.18 covers negative- and zero-size loops |
+| postcss | 8.5.17 | 8.5.30 | 8.5.23 covers disclosure and its follow-up |
+| source-map-js | 1.2.1 | 1.2.2 | 1.2.2 fixes indexed source-map offset DoS |
+
+Primary advisory metadata was rechecked, including withdrawal status and related fixes: [NanoID negative size](https://github.com/advisories/GHSA-28wg-ghj8-5hjv), [NanoID zero size](https://github.com/advisories/GHSA-2v37-7h3g-55p8), [PostCSS traversal](https://github.com/advisories/GHSA-r28c-9q8g-f849), [PostCSS follow-up](https://github.com/advisories/GHSA-fxqj-rqcc-2cmp) and [source-map-js offsets](https://github.com/advisories/GHSA-68fv-2mgg-jv7q). The PostCSS follow-up is moderate severity; npm reports the package at its highest advisory severity. The patch baselines are not claims about the latest releases.
+
+Dependency paths are Vite → PostCSS → NanoID/source-map-js and @tailwindcss/vite → @tailwindcss/node → source-map-js. These are build/CI processing dependencies here, not visitor-facing services. PostCSS's inspected call uses fixed `nanoid(6)`, and the site accepts no visitor CSS or source maps. The production bundle's module inventory contains none of the three packages. Malicious build inputs are still a relevant boundary; the original audit did not demonstrate a live website exploit or compromise.
+
+Verification: clean `npm ci`, full `npm audit --json` (**zero findings**), `npm run check` (27 tests, TypeScript and production build), emitted Glassbox contracts and targeted Chromium checks at 1280, 390 and 320px in both themes, including keyboard selection and no-JavaScript links. The generated `docs/` artifact remains byte-identical to the preceding release. The shared estate archive, six-project register, application source, security policies and Worker configuration are unchanged. No overrides, audit suppression or framework upgrade were needed.
+
+The known favicon 404 and Cloudflare-injected, CSP-blocked JavaScript are separate diagnostics, not a reason to weaken CSP. Publication uses the existing automatic Worker integration; its commit check records the build and Worker version identities. Dependency audit results are point-in-time evidence, not a security certification.
+
 ## Design boundary
 
 Parallax uses the same compact text-based before → after specimen as the other project panels. Its observations come from [guided challenge c1](https://github.com/Snowslash/parallax/tree/7b3e890640e37bd48596b1c6fc60e02e285508b0/demo/assets/v2): the same fixed wire tip projects within the cylinder outline at 0° and beyond the right outline at 60°. These are projected appearances, not claims about geometric containment or safety. The homepage embeds no Parallax images or interactive lab controls.
