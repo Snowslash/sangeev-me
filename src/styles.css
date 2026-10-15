@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@sangeev/estate-ui/contract.css";
+@source not "../project-pages";
 
 @theme {
   --font-sans: var(--estate-font-body);

@@ -17,5 +17,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - name: Check project-page template tooling
+        run: python3 -B -m unittest discover -s project-pages/tests
       - name: Check committed site output is current
         run: test -z "$(git status --porcelain -- docs/)"

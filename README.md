@@ -94,6 +94,8 @@ These are observations of the sibling source at review time, not an independent 
 
 ## Project layout
 
+The six project-page bodies share a checked source template in [`project-pages/`](project-pages/README.md). It is maintainer tooling, not part of the homepage bundle or the shared estate UI package. Changes are copied explicitly into the separately tested and deployed project repositories; updating this repository alone does not update those sites.
+
 - `src/App.tsx` — six-project Card Desk and preserved evidence specimens, composed with package-owned estate primitives
 - `src/styles.css` — page-specific paper desk and modal composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
 - `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
