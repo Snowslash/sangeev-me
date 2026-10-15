@@ -50,7 +50,9 @@ test('Parallax remains discoverable without JavaScript', () => {
   assert.match(read('../index.html'), /<a href="https:\/\/parallax\.sangeev\.me\/">Parallax<\/a>/);
 });
 
-test('an odd final project selector fills the last mobile row', () => {
-  const mobile = read('../src/styles.css').split('@media (max-width: 620px)')[1];
-  assert.match(mobile, /\.project-selector:last-child:nth-child\(odd\)\s*\{[^}]*grid-column: 1 \/ -1;[^}]*border-inline-end: 0;/);
+test('phone cards use normal document flow rather than a desktop scatter', () => {
+  const mobile = read('../src/styles.css').split('@media (max-width: 760px)')[1];
+  assert.ok(mobile, 'phone composition must exist');
+  assert.match(mobile, /\.project-register\s*\{[^}]*position: static;[^}]*display: grid;/);
+  assert.match(mobile, /\.project-selector\s*\{[^}]*position: relative;[^}]*width: 100%;/);
 });

@@ -1,0 +1,74 @@
+{
+  "sourceArchive": "sangeev.me-homepage-claude.zip",
+  "archiveSha256": "2728d9512e35c4fdf5fa32588d15c2e7f9873d633faf989223bef4bc9518add4",
+  "sourceMember": "sangeev.me/src/App.tsx",
+  "projects": {
+    "opnotes": {
+      "name": "Operation Note Generator",
+      "description": "Pick a procedure, fill in a few fields, and get a plain-text operation note to check and copy. Covers general surgery and trauma and orthopaedics.",
+      "href": "https://opnotes.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Operation Note Generator",
+      "tagline": "Plain-text operation note drafts"
+    },
+    "scratchpad": {
+      "name": "Clinical Shift Scratchpad",
+      "description": "A quick list for ward jobs during a shift. It stays on your device and clears itself when you’re done.",
+      "href": "https://scratchpad.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Clinical Shift Scratchpad",
+      "tagline": "A ward-job list for one shift"
+    },
+    "aligned": {
+      "name": "AlignEd",
+      "description": "Keeps your teaching plans, feedback and reflections together, then exports them for your portfolio.",
+      "href": "https://aligned.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: AlignEd",
+      "tagline": "Teaching evidence, kept together"
+    },
+    "casebook": {
+      "name": "Casebook",
+      "description": "Turns your surgical logbook export into charts you can filter, and shows the exact entries behind every number.",
+      "href": "https://casebook.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Casebook",
+      "tagline": "Your surgical logbook, as charts"
+    },
+    "parallax": {
+      "name": "Parallax",
+      "description": "Practise reading X-rays: compare two views of the same wire, then see in 3D where it really lies.",
+      "href": "https://parallax.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Parallax",
+      "tagline": "Learn to read X-ray views"
+    },
+    "glassbox": {
+      "name": "Glassbox",
+      "description": "Predict what happens, watch a recorded physiology experiment, then see what changed and why.",
+      "href": "https://glassbox.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Glassbox",
+      "tagline": "Predict, then watch the physiology"
+    }
+  },
+  "intro": "I build small tools that run in your browser, for surgical training, ward work and teaching.",
+  "evidenceLabels": [
+    "What you fill in",
+    "The draft you check",
+    "A job you jot down",
+    "How it sits on your list",
+    "Feedback from a session",
+    "What to change next time",
+    "Example filter",
+    "Logbook entries that match",
+    "First view",
+    "Additional view",
+    "Before blood loss",
+    "At 550 s"
+  ],
+  "footer": {
+    "text": "Source on GitHub",
+    "href": "https://github.com/Snowslash/sangeev-me"
+  }
+}

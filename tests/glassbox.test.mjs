@@ -10,7 +10,7 @@ test('Glassbox opens its project overview, not a forced first lesson', () => {
   assert.match(record, /name: "Glassbox"/);
   assert.match(record, /href: "https:\/\/glassbox\.sangeev\.me\/"/);
   assert.match(record, /ariaLabel: "Open project: Glassbox"/);
-  assert.match(record, /Recorded physiology experiments/);
+  assert.match(record, /Predict what happens, watch a recorded physiology experiment, then see what changed and why\./);
 });
 
 test('Glassbox uses rounded observations from the recorded fictional blood-loss run', () => {
@@ -26,7 +26,7 @@ test('Glassbox uses rounded observations from the recorded fictional blood-loss 
 test('Glassbox remains available in the initial HTML and emitted fallback', () => {
   const html = process.env.LANDING_HTML ? readFileSync(process.env.LANDING_HTML, 'utf8') : read('../index.html');
   assert.match(html, /<a href="https:\/\/glassbox\.sangeev\.me\/">Glassbox<\/a>/);
-  assert.match(html, /Recorded physiology experiments/);
+  assert.match(html, /Predict what happens, watch a recorded physiology experiment, then see what changed and why\./);
   assert.doesNotMatch(html, /project-links/);
 });
 

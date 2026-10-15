@@ -56,15 +56,18 @@ test('homepage publishes canonical crawler discovery files', () => {
   }
 });
 
-test('homepage implements one unified six-project hinge window', () => {
+test('homepage implements the six-project Card Desk with preserved static evidence', () => {
   const app = read('../src/App.tsx');
   const styles = read('../src/styles.css');
   const packageJson = JSON.parse(read('../package.json'));
 
-  assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Building small, practical tools\.<\/EstatePageTitle>/);
+  assert.match(app, /<EstatePageTitle id="page-title" variant="landing">Hi, I’m Sangeev/);
   assert.match(app, /<section[^>]*id="projects"/);
   assert.match(app, /type ProjectKey = "opnotes" \| "scratchpad" \| "aligned" \| "casebook" \| "parallax" \| "glassbox";/);
-  assert.match(app, /useState<ProjectKey>\("opnotes"\)/);
+  assert.match(app, /useState<Mode>\("groups"\)/);
+  assert.match(app, /useState<ProjectKey \| null>\(keyFromHash\)/);
+  assert.match(app, /aria-modal="true"/);
+  assert.match(app, /aria-label="Arrange the cards"/);
   assert.match(app, /className="project-window"/);
   assert.match(app, /className="project-register"[^>]*role="group"/);
   assert.match(app, /className="project-selector"/);
@@ -79,9 +82,9 @@ test('homepage implements one unified six-project hinge window', () => {
     assert.match(app, new RegExp(`case "${key}"`), `missing evidence state: ${key}`);
   }
 
-  assert.match(app, /Structured drafts for common emergency general-surgery operation notes\./);
-  assert.match(app, /A temporary ward-job list for busy clinical shifts\./);
-  assert.match(app, /Local-first teaching evidence and portfolio exports\./);
+  assert.match(app, /Pick a procedure, fill in a few fields, and get a plain-text operation note to check and copy\./);
+  assert.match(app, /A quick list for ward jobs during a shift\./);
+  assert.match(app, /Keeps your teaching plans, feedback and reflections together, then exports them for your portfolio\./);
 
   assert.match(app, /https:\/\/opnotes\.sangeev\.me/);
   assert.match(app, /https:\/\/scratchpad\.sangeev\.me/);
@@ -111,7 +114,7 @@ test('homepage implements one unified six-project hinge window', () => {
     assert.equal(existsSync(new URL(`../src/assets/evidence/${staleAsset}`, import.meta.url)), false, `unused screenshot evidence remains: ${staleAsset}`);
   }
   assert.match(app, /from "@sangeev\/estate-ui"/);
-  assert.match(app, /<>\s*<PublicEstateHeader current="home"[\s\S]*?<EstateShell variant="landing">/, 'header must sit outside the named shared shell');
+  assert.match(app, /<PublicEstateHeader current="home"[\s\S]*?<main[\s\S]*?<EstateShell variant="landing">/, 'header must sit outside the named shared shell');
   assert.match(styles, /@sangeev\/estate-ui\/contract\.css/);
   assert.match(styles, /\.project-window/);
   assert.match(styles, /\.project-register/);
@@ -162,7 +165,7 @@ test('Casebook links its landing and shows only the source-grounded static filte
   assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open project: Casebook"/);
   const specimen = app.match(/case "casebook":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
-  for (const text of ['Static example', 'Performed', 'February 2026', 'Synthetic procedure A', 'Source rows 5 and 6', 'Duplicate retained']) assert.ok(specimen.includes(text), text);
+  for (const text of ['Example filter', 'Performed', 'February 2026', 'Synthetic procedure A', 'Source rows 5 and 6', 'Duplicate retained']) assert.ok(specimen.includes(text), text);
   assert.doesNotMatch(specimen, /<input|<select|<button|competenc|score/i);
   assert.match(read('../README.md'), /https:\/\/casebook\.sangeev\.me\//);
 });
@@ -177,9 +180,9 @@ test('homepage default HTML remains a complete useful project presentation witho
   const html = read('../index.html');
 
   assert.match(html, /<div id="root">[\s\S]*class="no-js-fallback"[\s\S]*<\/div>/);
-  assert.match(html, /Building small, practical tools\./);
+  assert.match(html, /Hi, I’m Sangeev/);
   assert.match(html, /Operation Note Generator/);
-  assert.match(html, /Structured drafts for common emergency general-surgery operation notes\./);
+  assert.match(html, /Pick a procedure, fill in a few fields, and get a plain-text operation note to check and copy\./);
   assert.match(html, /Purulent fluid/);
   assert.match(html, /Ribbon gauze packing/);
   assert.match(html, /Findings: Purulent fluid encountered\./);
@@ -212,11 +215,11 @@ test('Deep Atlas evidence uses semantic dark roles and ink on coral', () => {
   assert.doesNotMatch(dark, /--estate-focus:/);
   assert.match(css, /\.capture-task\s*\{[^}]*color: var\(--estate-ink\)/);
   assert.match(css, /\.active-row__priority\s*\{[^}]*color: var\(--estate-ink\)/);
-  assert.match(css, /\.project-selector\[aria-pressed="true"\]\s*\{[^}]*color: var\(--estate-ink\)/);
+  assert.match(css, /\.desk-tray button\[aria-pressed="true"\]\s*\{[^}]*color: var\(--desk-ground\)/);
 });
 
 test('mobile evidence dividers follow the same semantic edge and rule roles', () => {
   const css = read('../src/styles.css');
-  const mobile = css.slice(css.indexOf('@media (max-width: 620px)'));
+  const mobile = css.slice(css.indexOf('@media (max-width: 760px)'));
   assert.doesNotMatch(mobile, /var\(--estate-(deep|shoal)\)/);
 });
