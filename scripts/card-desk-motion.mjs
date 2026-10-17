@@ -84,7 +84,9 @@ try {
         }
         assert.equal(await page.locator('.project-window').getAttribute('data-mode'), 'stack');
         await page.waitForFunction(() => !document.querySelector('.project-selector[data-settling]'));
-        assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0);
+        // Approved preview loops are independent of finite card arrangements.
+        // Reduced-motion checks below still cover every animation on the page.
+        assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running' && !animation.effect.target.closest('.preview-art')).length), 0);
         await page.getByRole('button', { name: 'Sort by group', exact: true }).focus();
         await page.keyboard.press('Enter');
         await page.waitForTimeout(100);

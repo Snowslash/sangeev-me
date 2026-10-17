@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
+import { X } from "lucide-react";
 import { EstatePageTitle, EstateShell, PublicEstateHeader, useEstateTheme } from "@sangeev/estate-ui";
+import { IdlePreview, previews } from "./Previews";
 
 type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax" | "glassbox";
 
@@ -148,7 +150,7 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
             <span className="hinge-label">Logbook entries that match</span>
             <div className="op-facts">
               <div className="op-fact"><small>Source rows 5 and 6</small><strong>Synthetic procedure A</strong></div>
-              <p>Duplicate retained</p>
+              <p className="op-note">Duplicate retained</p>
             </div>
           </div>
         </div>
@@ -197,6 +199,9 @@ function EvidencePanel({ project }: { project: ProjectKey }) {
       );
   }
 }
+
+const themeColors = { dark: "#061e1d", light: "#073f3c" } as const;
+
 type Mode = "scatter" | "groups" | "stack";
 type Pose = { x: number; y: number; r: number };
 type Poses = Record<ProjectKey, Pose>;
@@ -352,6 +357,7 @@ function App() {
   const cardRefs = useRef<Partial<Record<ProjectKey, HTMLButtonElement | null>>>({});
   const heldHeading = useRef<HTMLHeadingElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const [viewHeight, setViewHeight] = useState(() => window.innerHeight);
   const [mode, setMode] = useState<Mode>("groups");
   // Each press of Scatter deals a new random arrangement; the page opens sorted by group.
   const [spots, setSpots] = useState<Spots>({});
@@ -363,6 +369,15 @@ function App() {
   // Where the held card was lifted from, relative to its held pose, so pick-up reads as one card rising.
   const [lift, setLift] = useState<{ x: number; y: number; s: number; r: number } | null>(null);
   const [dropping, setDropping] = useState(false);
+  // The card under the pointer or keyboard focus, drawn in the preview window below the intro.
+  const [preview, setPreview] = useState<ProjectKey | null>(null);
+  const previewTimer = useRef(0);
+  const showPreview = (key: ProjectKey | null) => {
+    window.clearTimeout(previewTimer.current);
+    // A short grace period so moving between neighbouring cards doesn't flash the idle picture.
+    if (key) setPreview(key);
+    else previewTimer.current = window.setTimeout(() => setPreview(null), 160);
+  };
   const posesRef = useRef(poses);
   posesRef.current = poses;
   const dealt = useRef(false);
@@ -386,6 +401,23 @@ function App() {
   } | null>(null);
   const project = selectedProject ? projects[selectedProject] : null;
   const introHeight = () => introRef.current?.offsetHeight ?? 360;
+  // Keep the supplied window-height desk; grow it when grouped shelves need more room.
+  const deskHeight = (m: Mode) => {
+    const room = Math.max(720, viewHeight - 72 - 80);
+    if (m !== "groups") return room;
+    const intro = introHeight();
+    return Math.max(room, Math.max(neededHeight("groups", size.width, intro), intro) + 32);
+  };
+
+  useEffect(() => {
+    const onResize = () => setViewHeight(window.innerHeight);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColors[theme]);
+  }, [theme]);
 
   useLayoutEffect(() => {
     const desk = deskRef.current;
@@ -415,16 +447,16 @@ function App() {
     }
     if (!dealt.current) {
       dealt.current = true;
-      setPoses(layout("stack", size.width, size.height, introHeight()));
-      if (reducedMotion()) setPoses(layout("groups", size.width, size.height, introHeight()));
-      else dealFrame.current = requestAnimationFrame(() => { dealFrame.current = requestAnimationFrame(() => settle(layout("groups", size.width, size.height, introHeight()), 1300)); });
+      setPoses(layout("stack", size.width, deskHeight("groups"), introHeight()));
+      if (reducedMotion()) setPoses(layout("groups", size.width, deskHeight("groups"), introHeight()));
+      else dealFrame.current = requestAnimationFrame(() => { dealFrame.current = requestAnimationFrame(() => settle(layout("groups", size.width, deskHeight("groups"), introHeight()), 1300)); });
       return () => cancelAnimationFrame(dealFrame.current);
     }
     // Grouping can resize the desk. Retarget the cards without cancelling the
     // arrangement transition or its timer; full cleanup belongs to unmount.
-    setPoses(layout(mode, size.width, size.height, introHeight(), spots));
+    setPoses(layout(mode, size.width, deskHeight(mode), introHeight(), spots));
     return () => cancelAnimationFrame(dealFrame.current);
-  }, [size, narrow, settle, cancelMotion]);
+  }, [size, narrow, viewHeight, settle, cancelMotion]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -441,24 +473,25 @@ function App() {
         setSelectedProject(null);
         history.replaceState(null, "", window.location.pathname + window.location.search);
       }
-      setPoses(layout(mode, size.width, size.height, introHeight(), spots));
+      setPoses(layout(mode, size.width, deskHeight(mode), introHeight(), spots));
     };
     media.addEventListener("change", stop);
     return () => media.removeEventListener("change", stop);
-  }, [mode, size, spots, dropping, cancelMotion]);
+  }, [mode, size, spots, dropping, viewHeight, cancelMotion]);
 
   useEffect(() => () => {
     cancelMotion();
     window.clearTimeout(closeTimer.current);
     window.clearTimeout(clickTimer.current);
+    window.clearTimeout(previewTimer.current);
   }, [cancelMotion]);
 
   const arrange = (next: Mode) => {
-    const nextSpots = next === "scatter" ? randomSpots(size.width, size.height, introHeight()) : spots;
+    const nextSpots = next === "scatter" ? randomSpots(size.width, deskHeight("scatter"), introHeight()) : spots;
     if (next === "scatter") setSpots(nextSpots);
     setMode(next);
     setStacking(projectOrder);
-    settle(layout(next, size.width, size.height, introHeight(), nextSpots));
+    settle(layout(next, size.width, deskHeight(next), introHeight(), nextSpots));
   };
 
   const raise = (key: ProjectKey) => setStacking((current) => [...current.filter((k) => k !== key), key]);
@@ -466,7 +499,7 @@ function App() {
   const place = (key: ProjectKey, pose: Pose) => {
     setPoses((current) => ({
       ...current,
-      [key]: { ...pose, x: clamp(pose.x, 0, size.width - CARD_W), y: clamp(pose.y, 0, size.height - CARD_H) },
+      [key]: { ...pose, x: clamp(pose.x, 0, size.width - CARD_W), y: clamp(pose.y, 0, deskHeight(mode) - CARD_H) },
     }));
   };
 
@@ -521,14 +554,15 @@ function App() {
       return;
     }
     // Throw: carry the release velocity, bleed it off with friction, stop at the desk edge.
+    const floor = deskHeight(mode) - CARD_H;
     const step = () => {
       vx *= 0.9;
       vy *= 0.9;
       const pose = posesRef.current[key];
       const x = clamp(pose.x + vx * 16, 0, size.width - CARD_W);
-      const y = clamp(pose.y + vy * 16, 0, size.height - CARD_H);
+      const y = clamp(pose.y + vy * 16, 0, floor);
       if (x === 0 || x === size.width - CARD_W) vx = 0;
-      if (y === 0 || y === size.height - CARD_H) vy = 0;
+      if (y === 0 || y === floor) vy = 0;
       const still = Math.hypot(vx, vy) < 0.02;
       posesRef.current = { ...posesRef.current, [key]: { x, y, r: still ? rest : rest + clamp(vx * 9, -9, 9) } };
       setPoses(posesRef.current);
@@ -569,7 +603,7 @@ function App() {
     const card = cardRefs.current[key]?.getBoundingClientRect();
     const desk = deskRef.current?.getBoundingClientRect();
     if (card && desk && !narrow) {
-      const heldW = Math.min(780, desk.width);
+      const heldW = Math.min(780, window.innerWidth - 32);
       setLift({
         x: card.left + card.width / 2 - window.innerWidth / 2,
         y: card.top + card.height / 2 - window.innerHeight / 2,
@@ -669,8 +703,6 @@ function App() {
     place(key, { ...pose, x: pose.x + move[0] * distance, y: pose.y + move[1] * distance });
   };
 
-  const deskNeeds = narrow ? 0 : neededHeight(mode, size.width, introHeight());
-
   return (
     <>
       <div inert={Boolean(selectedProject)}>
@@ -686,7 +718,7 @@ function App() {
             ref={deskRef}
             data-mode={mode}
             data-narrow={narrow || undefined}
-            style={deskNeeds ? { minHeight: deskNeeds } : undefined}
+            style={narrow || !size.width ? undefined : { height: deskHeight(mode), minHeight: 0 }}
           >
             <div className="intro" ref={introRef} inert={Boolean(selectedProject)}>
               <EstatePageTitle id="page-title" variant="landing">Hi, I’m Sangeev<span className="title-stop">.</span></EstatePageTitle>
@@ -726,6 +758,25 @@ function App() {
                   {group.title}
                 </p>
               ))}
+
+            {!narrow && shelvesFit(size.width) && (() => {
+              // The space under the intro, beside the shelves, shows a wordless picture of the hovered project.
+              const top = introHeight() + 28;
+              const height = neededHeight("groups", size.width, introHeight()) - top;
+              const Diagram = preview ? previews[preview] : IdlePreview;
+              return (
+                <div
+                  className="preview-window"
+                  aria-hidden="true"
+                  data-shown={(mode === "groups" && height >= 180) || undefined}
+                  style={{ top, height: Math.max(0, height), width: INTRO_W }}
+                >
+                  <div className="preview-art" key={preview ?? "idle"} data-project={preview ?? "idle"}>
+                    <Diagram />
+                  </div>
+                </div>
+              );
+            })()}
 
             <ul className="project-register" role="group" aria-label="Projects" inert={Boolean(selectedProject)}>
               {projectOrder.map((key) => {
@@ -772,7 +823,13 @@ function App() {
                       onPointerCancel={onPointerCancel}
                       onClick={() => pickUp(key)}
                       onKeyDown={(event) => onCardKey(event, key)}
-                      onFocus={() => focusCard(key)}
+                      onFocus={() => {
+                        focusCard(key);
+                        showPreview(key);
+                      }}
+                      onBlur={() => showPreview(null)}
+                      onPointerEnter={() => showPreview(key)}
+                      onPointerLeave={() => showPreview(null)}
                     >
                       <span className="card-name">{card.name}</span>
                       <span className="card-tagline">{card.tagline}</span>
@@ -804,7 +861,7 @@ function App() {
                       {project.name}
                     </h2>
                     <button type="button" className="stage-close" onClick={putDown} aria-label="Put the card down">
-                      <span aria-hidden="true">×</span>
+                      <X size={20} strokeWidth={2.5} aria-hidden="true" />
                       <span>Put down</span>
                     </button>
                   </header>

@@ -108,7 +108,8 @@ button { font: inherit; }
   --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.04 0 0 0 0 0.17 0 0 0 0 0.16 0 0 0 0.11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   --paper-edge-wear: inset 0 0 22px -4px rgb(2 20 19 / 0.2);
   --paper-smudge: rgb(2 20 19 / 0.055);
-  padding-block: var(--estate-space-6) var(--estate-space-7);
+  /* The bottom padding includes the gap above the footer, so the desk colour runs right down to it. */
+  padding-block: var(--estate-space-6) calc(var(--estate-space-7) + var(--estate-space-8));
   background: var(--desk-ground);
 }
 
@@ -140,6 +141,7 @@ button { font: inherit; }
   position: relative;
   height: max(720px, calc(100svh - var(--estate-header-height) - 5rem));
   min-height: 720px;
+  transition: height 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Evidence composition follows semantic dark roles; the light specimen is unchanged. */
@@ -234,6 +236,141 @@ button { font: inherit; }
 }
 
 .project-window[data-mode="groups"] .shelf-label { opacity: 1; transition-delay: 350ms; }
+
+/* ── Preview window: a wordless picture of the hovered card's project, in the space under the intro ── */
+.preview-window {
+  position: absolute;
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border: 2px solid color-mix(in oklab, var(--desk-muted) 32%, transparent);
+  border-radius: var(--estate-radius);
+  background: color-mix(in oklab, var(--desk-ground), rgb(2 20 19) 28%);
+  color: var(--desk-text);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease-out;
+}
+
+.preview-window[data-shown] { opacity: 1; transition-delay: 350ms; }
+
+.preview-art { width: 100%; height: 100%; animation: pv-fade 220ms ease-out; }
+.preview-art svg { display: block; width: 100%; height: 100%; }
+.preview-art[data-project="idle"] { opacity: 0.7; }
+
+/* Muted by colour and stroke opacity, so the looping fades (which animate opacity) don't undo it. */
+.pv-muted { color: var(--desk-muted); stroke-opacity: 0.7; }
+.pv-fill { fill: currentColor; stroke: none; opacity: 0.14; }
+.pv-strong { stroke-width: 2.6; }
+.pv-dash { stroke-dasharray: 4 7; }
+
+/* Every diagram loops on a 5s cycle in four beats (a, b, c, d), holds, then clears before it starts again.
+   pv-o1 to pv-o6 stagger the parts within a beat. */
+.pv-a, .pv-b, .pv-c, .pv-d,
+.pv-type, .pv-done, .pv-tick, .pv-gather, .pv-swell, .pv-bar, .pv-link, .pv-row, .pv-trace, .pv-playhead {
+  animation-duration: 5s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.pv-a { animation-name: pv-a; }
+.pv-b { animation-name: pv-b; }
+.pv-c { animation-name: pv-c; }
+.pv-d { animation-name: pv-d; }
+.pv-o1 { animation-delay: 0ms; }
+.pv-o2 { animation-delay: 90ms; }
+.pv-o3 { animation-delay: 180ms; }
+.pv-o4 { animation-delay: 270ms; }
+.pv-o5 { animation-delay: 360ms; }
+.pv-o6 { animation-delay: 450ms; }
+
+/* Operation Note Generator: each field is typed in, then the note fills and is ticked. */
+.pv-type { stroke-dasharray: 1; animation-name: pv-type; }
+.pv-pop { transform-box: fill-box; transform-origin: 50% 50%; }
+
+/* Scratchpad: the top job is ticked, slides off, and the clock hand turns once a cycle. */
+.pv-done { animation-name: pv-done; }
+.pv-tick { fill: currentColor; animation-name: pv-tick; }
+.pv-hand { transform-box: view-box; transform-origin: 290px 64px; animation: pv-spin 5s linear infinite; }
+
+/* AlignEd: the three pieces drop into the record, it swells, and the export goes out. */
+.pv-gather { animation-name: pv-gather; }
+.pv-to-1 { --tx: 156px; --ty: 75px; }
+.pv-to-2 { --tx: 154px; --ty: 3px; }
+.pv-to-3 { --tx: 156px; --ty: -65px; }
+.pv-swell { animation-name: pv-swell; }
+
+/* Casebook: bars grow from the rows, one is picked, and a line runs back to the rows it counts. */
+.pv-bar { transform-box: fill-box; transform-origin: 50% 100%; animation-name: pv-grow; }
+.pv-picked { animation-name: pv-grow-pick; }
+.pv-link { stroke-dasharray: 1; animation-name: pv-link; animation-timing-function: ease-out; }
+.pv-row { fill: currentColor; stroke: none; opacity: 0.3; animation-name: pv-row; }
+
+/* Parallax: beam and plate swing together around the wire (the wire sits at the centre of turn, so its shadow
+   stays centred). At -20deg the wire is about 56deg off the plate, at +20deg about 16deg, so the shadow runs
+   from cos 56deg (0.56) to cos 16deg (0.96) of its full length. */
+.pv-carm { transform-box: view-box; transform-origin: 180px 128px; animation: pv-swing 4.2s ease-in-out infinite alternate; }
+.pv-shadow { transform-box: fill-box; transform-origin: 50% 50%; animation: pv-shadow 4.2s ease-in-out infinite alternate; }
+
+/* Glassbox: after the prediction, a playhead sweeps and draws the recording away from its baseline. */
+.pv-trace { stroke-width: 2.6; stroke-dasharray: 1; animation-name: pv-trace; animation-timing-function: ease-in-out; }
+.pv-playhead { color: var(--desk-muted); animation-name: pv-playhead; animation-timing-function: ease-in-out; }
+
+/* Idle: a pointer hovers over a card. */
+.pv-pointer { fill: currentColor; stroke: none; opacity: 0.8; animation: pv-bob 1.6s ease-in-out infinite alternate; }
+
+@keyframes pv-fade { from { opacity: 0; } }
+
+/* The four beats: in at 0-6%, 26-32%, 46-52% and 62-68%; all hold until 82%, gone by 90%. */
+@keyframes pv-a { 0% { opacity: 0; transform: translateY(5px); } 6%, 82% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+@keyframes pv-b { 0%, 26% { opacity: 0; transform: translateY(5px); } 32%, 82% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+@keyframes pv-c { 0%, 46% { opacity: 0; transform: translateY(5px); } 52%, 82% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+@keyframes pv-d { 0%, 62% { opacity: 0; transform: scale(0.6); } 68%, 82% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+
+@keyframes pv-type { 0%, 6% { stroke-dashoffset: 1; } 18%, 100% { stroke-dashoffset: 0; } }
+
+@keyframes pv-done {
+  0% { opacity: 0; transform: translateY(5px); }
+  6%, 34% { opacity: 1; transform: none; }
+  46%, 82% { opacity: 0.18; transform: translateX(24px); }
+  90%, 100% { opacity: 0; transform: translateX(24px); }
+}
+@keyframes pv-tick { 0%, 24% { opacity: 0; } 30%, 100% { opacity: 1; } }
+@keyframes pv-spin { to { transform: rotate(360deg); } }
+
+@keyframes pv-gather {
+  0% { opacity: 0; transform: translateX(-14px); }
+  6%, 24% { opacity: 1; transform: none; }
+  38%, 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.35); }
+}
+@keyframes pv-swell { 0%, 30% { opacity: 0.14; } 40% { opacity: 0.42; } 52%, 100% { opacity: 0.2; } }
+
+@keyframes pv-grow { 0%, 4% { transform: scaleY(0); } 16%, 84% { transform: scaleY(1); } 92%, 100% { transform: scaleY(0); } }
+@keyframes pv-grow-pick {
+  0%, 4% { transform: scaleY(0); fill-opacity: 0; }
+  16%, 26% { transform: scaleY(1); fill: currentColor; fill-opacity: 0; }
+  32%, 84% { transform: scaleY(1); fill: currentColor; fill-opacity: 0.45; }
+  92%, 100% { transform: scaleY(0); fill: currentColor; fill-opacity: 0; }
+}
+@keyframes pv-link { 0%, 34% { stroke-dashoffset: 1; opacity: 1; } 46%, 82% { stroke-dashoffset: 0; opacity: 1; } 90%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes pv-row { 0%, 46% { opacity: 0; } 52%, 82% { opacity: 0.3; } 90%, 100% { opacity: 0; } }
+
+@keyframes pv-swing { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+@keyframes pv-shadow { from { transform: scaleX(0.56); } to { transform: scaleX(0.96); } }
+
+@keyframes pv-trace {
+  0%, 14% { stroke-dashoffset: 1; opacity: 1; }
+  66%, 82% { stroke-dashoffset: 0; opacity: 1; }
+  90%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes pv-playhead {
+  0%, 14% { transform: translateX(0); opacity: 1; }
+  66%, 82% { transform: translateX(296px); opacity: 1; }
+  90% { transform: translateX(296px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+@keyframes pv-bob { from { transform: translate(0, 0); } to { transform: translate(-3px, -5px); } }
 
 /* ── Cards ── */
 .project-register {
@@ -333,7 +470,7 @@ button { font: inherit; }
 
 [data-theme="dark"] .project-selector,
 .dark .project-selector {
-  --card-paper: var(--card);
+  --card-paper: #1d4b47;
   --card-edge: var(--estate-night-link);
 }
 
@@ -381,7 +518,7 @@ button { font: inherit; }
   inset-inline-start: 50%;
   z-index: 41;
   display: flex;
-  width: min(780px, calc(100% - 2rem));
+  width: min(780px, calc(100vw - 2rem));
   max-height: calc(100dvh - 3rem);
   overflow: auto;
   padding: clamp(1.25rem, 3vw, 2.25rem);
@@ -399,13 +536,13 @@ button { font: inherit; }
   background-image: var(--paper-grain);
   box-shadow: 0 60px 90px -30px rgb(2 20 19 / 0.9), var(--paper-edge-wear);
   color: var(--evidence-text);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(-0.6deg);
   animation: desk-lift 520ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] .evidence-stage,
 .dark .evidence-stage {
-  --held-paper: var(--card);
+  --held-paper: #1d4b47;
   --held-edge: var(--estate-night-link);
 }
 
@@ -686,8 +823,15 @@ button { font: inherit; }
 
 .session-action strong { color: var(--evidence-strong); }
 
+/* On a window taller than the page, the footer runs to the bottom instead of leaving bare ground below it. */
+#root {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+}
+
 .site-footer {
-  margin-block-start: var(--estate-space-8);
+  flex: 1 0 auto;
   border-block-start: 1px solid var(--estate-rule);
   background: var(--estate-chrome-background);
   color: var(--estate-chrome-foreground);
@@ -715,7 +859,7 @@ button { font: inherit; }
 
 /* ── Narrow: the cards settle into a grouped column; tap to pick one up ── */
 @media (max-width: 760px) {
-  .desk-page { padding-block: var(--estate-space-5) var(--estate-space-6); }
+  .desk-page { padding-block: var(--estate-space-5) calc(var(--estate-space-6) + var(--estate-space-8)); }
   .project-window { height: auto; min-height: 0; touch-action: auto; }
   .intro { position: static; width: auto; padding-block-end: var(--estate-space-5); }
   .intro .estate-page-title { font-size: 2.35rem; }
@@ -797,8 +941,16 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
+  .project-window,
   .project-selector,
   .card-shadow { transition: none; }
+
+  /* Diagrams appear complete and still. */
+  .preview-window { transition: none; }
+  .preview-art,
+  .preview-art * { animation: none !important; }
+  .pv-trace { stroke-dasharray: none; }
+  .pv-link { stroke-dasharray: none; }
 
   .project-selector[data-settling],
   .card-shadow[data-settling] { transition: none; transition-delay: 0s !important; }

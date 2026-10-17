@@ -51,7 +51,7 @@ try {
       assert.equal(point.touchAction, 'auto', 'desk permits native scrolling and zoom');
       // Restrict gesture capture to cards: a touch drag still moves a card without opening it.
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-      const card = page.locator('[data-project="opnotes"]');
+      const card = page.locator('.project-selector[data-project="opnotes"]');
       await card.scrollIntoViewIfNeeded();
       const cardBox = await card.boundingBox();
       const style = await card.getAttribute('style');

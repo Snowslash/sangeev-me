@@ -92,11 +92,22 @@ Sangeev accepted keeping the supplied wording after these flags were raised. The
 
 These are observations of the sibling source at review time, not an independent deployment audit of those applications. No sibling project was changed.
 
+### Animated project previews
+
+The approved `sangeev.me-homepage-claude-2.zip` adds a decorative SVG preview below the desktop introduction. Hovering or focusing a card selects its diagram; leaving it returns to the idle pointer after a short grace period. All six diagrams and the idle illustration retain the supplied infinite loops, timing, easing and artwork. They are illustrations, not screenshots, live clinical applications or recorded simulation data. Phones retain the grouped cards and detail sheet without the desktop preview.
+
+The integration keeps the supplied footer/desk spacing, dark paper surface (`#1d4b47`), close icon and slight held-card rotation as page-local presentation choices. It preserves the maintained skip link, modal focus/scroll handling, touch scrolling, query/hash behaviour, timer cleanup and complete staggered card transitions. Short-window modal clearance and non-shrinking detail sections remain in place. The shared package, dependency lockfile, security headers and sibling projects are unchanged. Reduced motion disables the preview loops both at load and when the preference changes.
+
+`tests/card-previews.test.mjs` pins the artwork and preview CSS to the approved archive (SHA-256 `1fe4062891024f2b12ee05da68d1fe69bf332386173e66319de02facfeb7ba81`). Run `node scripts/card-previews-browser.mjs` with the same Playwright/Chromium environment above to check actual changes between frames, natural continuation into a second cycle, keyboard activation and static reduced-motion diagrams. The arrangement runner excludes only the approved decorative previews from its normal-motion completion check; reduced-motion checks still cover the entire page.
+
+Local integration verification: `npm run check` passed 48 tests, TypeScript and the production build. Browser checks passed all six looping previews, 72 project-dialog journeys in both themes, 54 natural card transitions and three touch-scroll/drag/tap scenarios. No uncaught errors, CSP violations or external resource requests were observed in the preview and dialog suites. Evidence is under ignored `.cache/animated-previews/`. This is local Chromium verification, not deployment or physical-device/Safari certification.
+
 ## Project layout
 
 The six project-page bodies share a checked source template in [`project-pages/`](project-pages/README.md). It is maintainer tooling, not part of the homepage bundle or the shared estate UI package. Changes are copied explicitly into the separately tested and deployed project repositories; updating this repository alone does not update those sites.
 
 - `src/App.tsx` — six-project Card Desk and preserved evidence specimens, composed with package-owned estate primitives
+- `src/Previews.tsx` — supplied decorative project diagrams and idle illustration
 - `src/styles.css` — page-specific paper desk and modal composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
 - `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact
 - `public/_headers` — Cloudflare static-asset security headers copied into the build
@@ -107,6 +118,7 @@ The six project-page bodies share a checked source template in [`project-pages/`
 - `scripts/card-desk-browser.mjs` — serial browser regression/evidence runner
 - `scripts/card-desk-motion.mjs` — frame-level arrangement and motion-lifecycle regression
 - `scripts/card-desk-touch.mjs` — native touch scrolling, card dragging and tapping regression
+- `scripts/card-previews-browser.mjs` — looping previews, keyboard selection and reduced-motion regression
 
 ## Deployment
 

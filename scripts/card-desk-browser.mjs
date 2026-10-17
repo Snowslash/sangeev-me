@@ -55,7 +55,7 @@ async function closed(page, key) {
   const themeButton = page.locator('.estate-site-header button');
   await themeButton.focus();
   assert.ok(await themeButton.evaluate(element => element === document.activeElement), 'header becomes focusable after closing');
-  await page.locator(`[data-project="${key}"]`).focus();
+  await page.locator(`.project-selector[data-project="${key}"]`).focus();
 }
 try {
   // Same artifact, genuine site headers. Every project is opened in every scenario.
@@ -83,7 +83,7 @@ try {
       assert.equal(await page.locator('.site-footer .footer-source').getAttribute('href'), copy.footer.href);
       await page.screenshot({ path: path.join(output, `${label}-${theme}.png`), fullPage: true });
       for (const [i, key] of projects.entries()) {
-        const card = page.locator(`[data-project="${key}"]`);
+        const card = page.locator(`.project-selector[data-project="${key}"]`);
         assert.equal(await card.locator('.card-tagline').innerText(), copy.projects[key].tagline);
         await card.focus();
         await page.keyboard.press('Enter');
@@ -139,7 +139,7 @@ try {
     assert.equal(await page.getByRole('button', { name, exact: true }).getAttribute('aria-pressed'), 'true');
     if (mode === 'scatter') await page.screenshot({ path: path.join(output, 'desktop-scatter.png'), fullPage: true });
   }
-  const first = page.locator('[data-project="opnotes"]');
+  const first = page.locator('.project-selector[data-project="opnotes"]');
   await first.focus();
   const beforeKey = await first.getAttribute('style');
   await page.keyboard.press('ArrowRight');
