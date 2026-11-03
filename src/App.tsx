@@ -297,7 +297,17 @@ function layout(mode: Mode, width: number, height: number, introHeight: number, 
     let pose: Pose;
     if (mode === "scatter") {
       const [fx, fy, r] = spots[key] ?? [0.5, 0.5, 0];
-      pose = { x: fx * freeW, y: fy * freeH, r };
+      // Normalized spots can enter the intro (including its controls) after a
+      // resize. Recheck the current geometry, retaining the deal where safe.
+      let x = clamp(fx * freeW, 24, Math.max(24, freeW - 24));
+      let y = clamp(fy * freeH, 24, Math.max(24, freeH - 24));
+      if (introBlocks(x, y, introHeight)) {
+        const right = INTRO_W + 24;
+        const below = introHeight + 32;
+        if (right <= freeW - 24 && right - x < below - y) x = right;
+        else y = below;
+      }
+      pose = { x, y, r };
     } else if (mode === "groups" && shelvesFit(width)) {
       const group = groupIndex(key);
       const shelf = shelfGeometry[group];

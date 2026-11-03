@@ -73,7 +73,9 @@ The resize effect now preserves an active arrangement transition when changing m
 
 Run `node scripts/card-desk-motion.mjs` with the same Playwright/Chromium environment shown above. It records intermediate computed transforms and natural transition completion for all six cards under Stack, Sort by group and Scatter at 800, 1024 and 1440px. It also exercises rapid keyboard replacement and reduced motion at load and during movement. Fresh verification passed all **54 card transitions**, the **36-test** native check/build and the existing **72 dialog journeys**. Evidence: `.cache/card-desk-motion-green/` and `.cache/card-desk-motion-regression/`; failed before-fix and immutable-ZIP comparison captures are retained separately.
 
-A separate inherited layout limitation remains: on a narrow desktop desk, random Scatter positions can overlap the arrangement controls after the desk shrinks. The motion suite does not conceal this by force-clicking through cards; its reduced-motion check starts from a fresh grouped page, and rapid replacement uses real keyboard activation. This motion fix does not redesign the scatter layout.
+The Scatter/resize handling revalidates normalized card positions against the current intro area (which contains the arrangement controls), moving only colliding poses to the nearest available side or below it. A 24px desk inset retains room for the supplied lean. The random deal, motion, supplied artwork/copy, group and stack layouts are unchanged.
+
+Run `node scripts/scatter-collision.mjs` with the same existing Playwright environment. Seed 29 reproduces the original control collision on Scatter at 1440px followed by resize to 800px. The candidate checks resize/repeated arrangement sequences at 1440, 800 and 768px in both verified themes, real non-forced control clicks, rotated Scatter card bounds and control hit-testing. Results go to `.cache/scatter-collision/` or `CARD_DESK_EVIDENCE`. This regression verifies the local build; publication and live-site verification are separate gates.
 
 ### Touch input verification
 
