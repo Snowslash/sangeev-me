@@ -57,7 +57,7 @@ test('homepage publishes canonical crawler discovery files', () => {
 });
 
 test('homepage implements the six-project Card Desk with preserved static evidence', () => {
-  const app = read('../src/App.tsx');
+  const app = [read('../src/App.tsx'), read('../src/projects.ts'), read('../src/EvidencePanel.tsx')].join('\n');
   const styles = read('../src/styles.css');
   const packageJson = JSON.parse(read('../package.json'));
 
@@ -128,7 +128,7 @@ test('homepage implements the six-project Card Desk with preserved static eviden
 });
 
 test('homepage opts into Projects and GitHub navigation while retaining the shared wordmark and theme control', () => {
-  const app = read('../src/App.tsx');
+  const app = [read('../src/App.tsx'), read('../src/projects.ts'), read('../src/EvidencePanel.tsx')].join('\n');
   const headerProps = app.match(/<PublicEstateHeader\b([^>]*)\/>/)?.[1] ?? '';
   assert.match(headerProps, /navigation="projects"/);
   assert.doesNotMatch(read('../src/styles.css'), /\.estate-site-header\b/);
@@ -146,7 +146,7 @@ test('homepage opts into Projects and GitHub navigation while retaining the shar
 });
 
 test('homepage omits Chess Coach and its retired specimen styles', () => {
-  assert.doesNotMatch(read('../src/App.tsx'), /chess|Stockfish|Maia|3\.\.\.Nf6|played-move/i);
+  assert.doesNotMatch(read('../src/App.tsx') + read('../src/projects.ts') + read('../src/EvidencePanel.tsx'), /chess|Stockfish|Maia|3\.\.\.Nf6|played-move/i);
   assert.doesNotMatch(read('../src/styles.css'), /chess|played-move/i);
   assert.doesNotMatch(read('../index.html'), /chess-coach|Chess Coach/i);
 });
@@ -160,7 +160,7 @@ test('shared package MIT notice is copied into the public artifact', () => {
 });
 
 test('Casebook links its landing and shows only the source-grounded static filter result', () => {
-  const app = read('../src/App.tsx');
+  const app = [read('../src/App.tsx'), read('../src/projects.ts'), read('../src/EvidencePanel.tsx')].join('\n');
   assert.match(app, /const projectOrder: ProjectKey\[\] = \["opnotes", "scratchpad", "aligned", "casebook", "parallax", "glassbox"\]/);
   assert.match(app, /href: "https:\/\/casebook\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open project: Casebook"/);
@@ -193,7 +193,7 @@ test('homepage default HTML remains a complete useful project presentation witho
 });
 
 test('homepage has a persistent theme control and no manual stale date', () => {
-  const app = read('../src/App.tsx');
+  const app = [read('../src/App.tsx'), read('../src/projects.ts'), read('../src/EvidencePanel.tsx')].join('\n');
   const main = read('../src/main.tsx');
 
   assert.match(app, /PublicEstateHeader/);

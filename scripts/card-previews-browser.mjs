@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createPreviewServer } from './preview.mjs';
 
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+import { chromium } from 'playwright';
 const output = path.resolve(process.env.CARD_DESK_EVIDENCE || '.cache/card-previews');
 await mkdir(output, { recursive: true });
 const server = await createPreviewServer();
@@ -20,9 +20,9 @@ try {
     results.external.push(route.request().url());
     return route.abort();
   });
+  await context.exposeBinding('recordCspViolation', (_source, violation) => results.csp.push(violation));
   await context.addInitScript(() => {
-    window.__csp = [];
-    document.addEventListener('securitypolicyviolation', e => window.__csp.push({ directive: e.violatedDirective, blocked: e.blockedURI }));
+    document.addEventListener('securitypolicyviolation', e => window.recordCspViolation({ directive: e.violatedDirective, blocked: e.blockedURI }));
   });
   const page = await context.newPage();
   page.setDefaultTimeout(5000);
@@ -96,7 +96,7 @@ try {
   assert.equal(await page.locator('.preview-window').count(), 0);
   assert.equal(await page.locator('.project-selector').count(), 6);
   await page.screenshot({ path: path.join(output, 'phone.png'), fullPage: true });
-  results.csp = await page.evaluate(() => window.__csp);
+
   assert.deepEqual(results.errors, []);
   assert.deepEqual(results.csp, []);
   assert.deepEqual(results.external, []);

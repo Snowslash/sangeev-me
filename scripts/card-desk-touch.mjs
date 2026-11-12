@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createPreviewServer } from './preview.mjs';
 
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+import { chromium } from 'playwright';
 const output = path.resolve(process.env.CARD_DESK_EVIDENCE || '.cache/card-desk-touch');
 await mkdir(output, { recursive: true });
 const server = await createPreviewServer();
@@ -71,6 +71,54 @@ try {
       await page.getByRole('button', { name: 'Put the card down' }).tap();
       await page.getByRole('dialog').waitFor({ state: 'hidden' });
       scenario.touchDragAndTap = 'pass';
+    } finally { await context.close(); }
+  }
+  // Normal-flow phones must scroll on cards, and the overflowing sheet must
+  // scroll locally without moving its locked background. Native CDP gestures,
+  // not dispatchEvent or programmatic scrollTop, drive both assertions.
+  for (const [width, height] of [[390, 600], [320, 568]]) {
+    const context = await browser.newContext({ viewport: { width, height }, hasTouch: true, serviceWorkers: 'block' });
+    try {
+      const page = await context.newPage();
+      page.on('pageerror', error => results.errors.push(error.message));
+      await page.goto(`http://127.0.0.1:${server.address().port}/`);
+      const card = page.locator('.project-selector[data-project="opnotes"]');
+      await card.waitFor();
+      await page.evaluate(() => document.fonts.ready);
+      const cdp = await context.newCDPSession(page);
+      const swipe = async (x, y) => {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+        for (let step = 1; step <= 12; step++) {
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y - step * 10 }] });
+          await page.waitForTimeout(20);
+        }
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await page.waitForTimeout(250);
+      };
+      await card.scrollIntoViewIfNeeded();
+      const box = await card.boundingBox();
+      const before = await page.evaluate(() => scrollY);
+      const style = await card.getAttribute('style');
+      await swipe(box.x + box.width / 2, box.y + box.height / 2);
+      const after = await page.evaluate(() => scrollY);
+      assert.ok(after > before + 40, 'native swipe on a normal-flow phone card scrolls the page');
+      assert.equal(await card.getAttribute('style'), style, 'phone scrolling never drags the card');
+      assert.equal(await page.getByRole('dialog').count(), 0);
+      await card.tap();
+      const dialog = page.getByRole('dialog');
+      await dialog.waitFor();
+      await page.waitForTimeout(450);
+      const sheet = await dialog.boundingBox();
+      const background = await page.evaluate(() => scrollY);
+      const scrollBefore = await dialog.evaluate(el => el.scrollTop);
+      await swipe(sheet.x + sheet.width / 2, sheet.y + sheet.height - 80);
+      const scrollAfter = await dialog.evaluate(el => el.scrollTop);
+      assert.ok(scrollAfter > scrollBefore + 40, 'native swipe scrolls the overflowing detail sheet');
+      assert.equal(await page.evaluate(() => scrollY), background, 'modal scroll cannot move the locked page');
+      await page.getByRole('button', { name: 'Put the card down' }).tap();
+      await dialog.waitFor({ state: 'hidden' });
+      assert.equal(await page.evaluate(() => document.activeElement?.dataset.project), 'opnotes');
+      results.scenarios.push({ width, height, before, after, scrollBefore, scrollAfter, background, phoneCardScroll: 'pass', sheetScroll: 'pass', focusReturn: 'pass' });
     } finally { await context.close(); }
   }
   assert.deepEqual(results.errors, []);

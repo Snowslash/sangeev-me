@@ -3,10 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const specimen = () => read('../src/App.tsx').match(/case "glassbox":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
+const specimen = () => read('../src/EvidencePanel.tsx').match(/case "glassbox":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
 
 test('Glassbox opens its project overview, not a forced first lesson', () => {
-  const record = read('../src/App.tsx').match(/glassbox: \{([\s\S]*?)\n  \}/)?.[1] ?? '';
+  const record = read('../src/projects.ts').match(/glassbox: \{([\s\S]*?)\n  \}/)?.[1] ?? '';
   assert.match(record, /name: "Glassbox"/);
   assert.match(record, /href: "https:\/\/glassbox\.sangeev\.me\/"/);
   assert.match(record, /ariaLabel: "Open project: Glassbox"/);

@@ -16,8 +16,23 @@ jobs:
           node-version: '22.23.3'
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: npm run browser:install -- --with-deps
+      - run: npm run check:browser
       - name: Check project-page template tooling
         run: python3 -B -m unittest discover -s project-pages/tests
       - name: Check committed site output is current
         run: test -z "$(git status --porcelain -- docs/)"
+      - name: Retain Card Desk browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: card-desk-browser
+          path: |
+            .cache/card-desk-review/
+            .cache/card-desk-motion/
+            .cache/scatter-collision/
+            .cache/card-desk-touch/
+            .cache/card-previews/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

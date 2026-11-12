@@ -4,7 +4,7 @@ import test from 'node:test';
 const read = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 
 test('every project action retains its visible phrase in the accessible name', () => {
-  const source = read('../src/App.tsx');
+  const source = read('../src/projects.ts');
   const names = [...source.matchAll(/ariaLabel: "([^"]+)"/g)].map(m => m[1]);
   assert.equal(names.length, 6);
   for (const name of names) assert.match(name, /^Open project: .+/, name);

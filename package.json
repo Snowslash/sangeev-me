@@ -8,7 +8,12 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "test": "node --test tests/*.test.mjs",
-    "check": "npm run test && npm run build"
+    "test:artifact": "LANDING_HTML=docs/index.html node --test tests/card-desk-copy.test.mjs tests/glassbox.test.mjs tests/local-preview.test.mjs",
+    "browser:install": "PLAYWRIGHT_BROWSERS_PATH=0 playwright install chromium",
+    "test:browser:suites": "node scripts/card-desk-browser.mjs && node scripts/card-desk-motion.mjs && node scripts/scatter-collision.mjs && node scripts/card-desk-touch.mjs && node scripts/card-previews-browser.mjs",
+    "test:browser": "PLAYWRIGHT_BROWSERS_PATH=0 npm run test:browser:suites",
+    "check": "npm run test && npm run build && npm run test:artifact",
+    "check:browser": "npm run check && npm run test:browser"
   },
   "dependencies": {
     "@sangeev/estate-ui": "file:vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz",
@@ -22,6 +27,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "playwright": "1.65.0",
     "typescript": "~6.0.2",
     "vite": "^8.1.4"
   }

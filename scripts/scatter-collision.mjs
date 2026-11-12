@@ -2,14 +2,14 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createPreviewServer } from './preview.mjs';
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+import { chromium } from 'playwright';
 const output = path.resolve(process.env.CARD_DESK_EVIDENCE || '.cache/scatter-collision');
 await mkdir(output, { recursive: true });
 const result = { cases: [], errors: [], external: [] };
 const server = await createPreviewServer();
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true, args: ['--renderer-process-limit=1'] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH, headless: true, args: ['--disable-dev-shm-usage', '--renderer-process-limit=1'] });
 try {
   for (const theme of ['light', 'dark']) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: theme, serviceWorkers: 'block' });

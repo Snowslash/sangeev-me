@@ -33,12 +33,12 @@ test('Card Desk keeps source, dependency fixes and security policy unchanged', (
   const policy = read('../public/_headers');
   assert.match(policy, /script-src 'self'; connect-src 'none'/);
   assert.doesNotMatch(policy, /unsafe-inline|unsafe-eval/);
-  const app = read('../src/App.tsx');
+  const app = ['App.tsx', 'projects.ts', 'EvidencePanel.tsx', 'desk-layout.ts'].map(file => read(`../src/${file}`)).join('\n');
   assert.doesNotMatch(app, /\bfetch\(|XMLHttpRequest|sendBeacon|<iframe|dangerouslySetInnerHTML/);
 });
 
 test('all six cards keep one canonical project destination and descriptive action', () => {
-  const source = read('../src/App.tsx');
+  const source = read('../src/projects.ts');
   for (const key of ['opnotes', 'scratchpad', 'aligned', 'casebook', 'parallax', 'glassbox']) {
     const record = source.match(new RegExp(`${key}: \\{([\\s\\S]*?)\\n  \\}`))?.[1] || '';
     assert.match(record, new RegExp(`href: "https://${key}\\.sangeev\\.me/?"`));

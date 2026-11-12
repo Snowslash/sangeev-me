@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const parallaxSpecimen = () => read('../src/App.tsx').match(/case "parallax":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
+const parallaxSpecimen = () => read('../src/EvidencePanel.tsx').match(/case "parallax":([\s\S]*?)\n\s*\);/)?.[1] ?? '';
 
 // Guided challenge c1: the same fixed wire, viewed at 0° and 60°.
 // These observations concern its projection, not geometric containment or safety.
@@ -26,7 +26,7 @@ test('Parallax uses the shared text hinge for two views of the same fixed wire',
 });
 
 test('Parallax retains its project destination and fixture provenance', () => {
-  const app = read('../src/App.tsx');
+  const app = read('../src/projects.ts');
   assert.match(app, /name: "Parallax"/);
   assert.match(app, /href: "https:\/\/parallax\.sangeev\.me\/"/);
   assert.match(app, /ariaLabel: "Open project: Parallax"/);
@@ -42,7 +42,7 @@ test('unused Parallax projection assets, imports and styles are removed', () => 
   for (const path of ['../src/assets/parallax/c1-000.png', '../src/assets/parallax/c1-060.png', '../public/licenses/MIT-Parallax.txt']) {
     assert.equal(existsSync(new URL(path, import.meta.url)), false, `unused file remains: ${path}`);
   }
-  assert.doesNotMatch(read('../src/App.tsx'), /parallaxView|assets\/parallax|projection-comparison|projection-preview|projection-caption|parallax-hinge/);
+  assert.doesNotMatch(read('../src/App.tsx') + read('../src/EvidencePanel.tsx'), /parallaxView|assets\/parallax|projection-comparison|projection-preview|projection-caption|parallax-hinge/);
   assert.doesNotMatch(read('../src/styles.css'), /projection-comparison|projection-preview|projection-caption|parallax-hinge/);
 });
 

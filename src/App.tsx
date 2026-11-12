@@ -3,335 +3,18 @@ import { X } from "lucide-react";
 import { EstatePageTitle, EstateShell, PublicEstateHeader, useEstateTheme } from "@sangeev/estate-ui";
 import { IdlePreview, previews } from "./Previews";
 
-type ProjectKey = "opnotes" | "scratchpad" | "aligned" | "casebook" | "parallax" | "glassbox";
-
-type ProjectRecord = {
-  name: string;
-  description: string;
-  href: string;
-  action: string;
-  ariaLabel: string;
-  /** A few words for the card face; the full description shows when the card is picked up. */
-  tagline: string;
-};
-
-const projects: Record<ProjectKey, ProjectRecord> = {
-  opnotes: {
-    name: "Operation Note Generator",
-    description: "Pick a procedure, fill in a few fields, and get a plain-text operation note to check and copy. Covers general surgery and trauma and orthopaedics.",
-    href: "https://opnotes.sangeev.me",
-    action: "Open project ↗",
-    ariaLabel: "Open project: Operation Note Generator",
-    tagline: "Plain-text operation note drafts",
-  },
-  scratchpad: {
-    name: "Clinical Shift Scratchpad",
-    description: "A quick list for ward jobs during a shift. It stays on your device and clears itself when you’re done.",
-    href: "https://scratchpad.sangeev.me",
-    action: "Open project ↗",
-    ariaLabel: "Open project: Clinical Shift Scratchpad",
-    tagline: "A ward-job list for one shift",
-  },
-  aligned: {
-    name: "AlignEd",
-    description: "Keeps your teaching plans, feedback and reflections together, then exports them for your portfolio.",
-    href: "https://aligned.sangeev.me",
-    action: "Open project ↗",
-    ariaLabel: "Open project: AlignEd",
-    tagline: "Teaching evidence, kept together",
-  },
-  casebook: {
-    name: "Casebook",
-    description: "Turns your surgical logbook export into charts you can filter, and shows the exact entries behind every number.",
-    href: "https://casebook.sangeev.me/",
-    action: "Open project ↗",
-    ariaLabel: "Open project: Casebook",
-    tagline: "Your surgical logbook, as charts",
-  },
-  parallax: {
-    name: "Parallax",
-    description: "Practise reading X-rays: compare two views of the same wire, then see in 3D where it really lies.",
-    href: "https://parallax.sangeev.me/",
-    action: "Open project ↗",
-    ariaLabel: "Open project: Parallax",
-    tagline: "Learn to read X-ray views",
-  },
-  glassbox: {
-    name: "Glassbox",
-    description: "Predict what happens, watch a recorded physiology experiment, then see what changed and why.",
-    href: "https://glassbox.sangeev.me/",
-    action: "Open project ↗",
-    ariaLabel: "Open project: Glassbox",
-    tagline: "Predict, then watch the physiology",
-  },
-};
-
-const projectOrder: ProjectKey[] = ["opnotes", "scratchpad", "aligned", "casebook", "parallax", "glassbox"];
-
-// Groups follow projectOrder, so arrow-key order matches reading order.
-const projectGroups: { id: string; title: string; keys: ProjectKey[] }[] = [
-  { id: "clinical-workflow", title: "Clinical workflow", keys: ["opnotes", "scratchpad"] },
-  { id: "portfolio", title: "Portfolio", keys: ["aligned", "casebook"] },
-  { id: "labs", title: "Physiology and imaging labs", keys: ["parallax", "glassbox"] },
-];
-
-function EvidencePanel({ project }: { project: ProjectKey }) {
-  switch (project) {
-    case "opnotes":
-      return (
-        <div className="hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">What you fill in</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>Finding</small><strong>Purulent fluid</strong></div>
-              <div className="op-fact"><small>Packing</small><strong>Ribbon gauze packing</strong></div>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">The draft you check</span>
-            <pre className="note-excerpt"><strong>Findings:</strong> Purulent fluid encountered.{"\n"}<strong>Operation:</strong> Cavity packed with ribbon gauze.</pre>
-          </div>
-        </div>
-      );
-
-    case "scratchpad":
-      return (
-        <div className="hinge scratch-hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">A job you jot down</span>
-            <div className="capture-ticket">
-              <div className="capture-task">Chase CT</div>
-              <div className="capture-meta"><span>urgent</span><span>C7 / Bed 4</span></div>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">How it sits on your list</span>
-            <div className="active-row">
-              <span className="active-row__priority">urgent</span>
-              <div><strong>Chase CT</strong><small>C7 / Bed 4</small></div>
-              <time dateTime="18:00">expires 18:00</time>
-            </div>
-          </div>
-        </div>
-      );
-
-    case "aligned":
-      return (
-        <div className="hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">Feedback from a session</span>
-            <div className="confidence-facts">
-              <div className="confidence-change"><span>Confidence</span><strong>2.5 → 4.0</strong></div>
-              <p className="feedback-theme">Theme: <q>More time with suturing</q></p>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">What to change next time</span>
-            <p className="session-action"><strong>Allow a longer practical station</strong> and repeat the confidence measure.</p>
-          </div>
-        </div>
-      );
-
-    case "casebook":
-      return (
-        <div className="hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">Example filter</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>Role</small><strong>Performed</strong></div>
-              <div className="op-fact"><small>Month</small><strong>February 2026</strong></div>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">Logbook entries that match</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>Source rows 5 and 6</small><strong>Synthetic procedure A</strong></div>
-              <p className="op-note">Duplicate retained</p>
-            </div>
-          </div>
-        </div>
-      );
-
-    case "parallax":
-      return (
-        <div className="hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">First view</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>View</small><strong>0°</strong></div>
-              <div className="op-fact"><small>Tip</small><strong>Within the outline</strong></div>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">Additional view</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>View</small><strong>60°</strong></div>
-              <div className="op-fact"><small>Tip</small><strong>Beyond the outline</strong></div>
-            </div>
-          </div>
-        </div>
-      );
-
-    case "glassbox":
-      return (
-        <div className="hinge">
-          <div className="hinge-cause">
-            <span className="hinge-label">Before blood loss</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>Blood volume</small><strong>5,487 mL</strong></div>
-              <div className="op-fact"><small>Mean arterial pressure</small><strong>95.3 mmHg</strong></div>
-            </div>
-          </div>
-          <div className="hinge-arrow" aria-hidden="true">→</div>
-          <div className="hinge-effect">
-            <span className="hinge-label">At 550 s</span>
-            <div className="op-facts">
-              <div className="op-fact"><small>Blood volume</small><strong>4,685 mL</strong></div>
-              <div className="op-fact"><small>Mean arterial pressure</small><strong>94.2 mmHg</strong></div>
-            </div>
-          </div>
-        </div>
-      );
-  }
-}
+import { projects, projectOrder, projectGroups, groupOf, type ProjectKey } from "./projects";
+import { EvidencePanel } from "./EvidencePanel";
+import { CARD_W, CARD_H, SLOT_GAP, clamp, shelfLeft, shelvesFit, perShelfRow, shelves, neededHeight, randomSpots, layout, type DeskGeometry, type Mode, type Pose, type Poses, type Spots } from "./desk-layout";
 
 const themeColors = { dark: "#061e1d", light: "#073f3c" } as const;
 
-type Mode = "scatter" | "groups" | "stack";
-type Pose = { x: number; y: number; r: number };
-type Poses = Record<ProjectKey, Pose>;
-
-const CARD_W = 280;
-const CARD_H = 160;
 const INTRO_W = 380;
-const SHELF_LEFT = INTRO_W + 48;
-const SHELF_LABEL = 32;
-const SHELF_GAP = 12;
-const ROW_GAP = 16;
-const SLOT_GAP = 24;
-
-const groupIndex = (key: ProjectKey) => projectGroups.findIndex((group) => group.keys.includes(key));
-const groupOf = (key: ProjectKey) => projectGroups[groupIndex(key)];
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const keyFromHash = (): ProjectKey | null => {
   const key = window.location.hash.slice(1);
   return (projectOrder as string[]).includes(key) ? (key as ProjectKey) : null;
 };
-
-/** Shelves sit beside the intro whenever at least one card fits there. */
-const shelvesFit = (width: number) => width - SHELF_LEFT >= CARD_W;
-const perShelfRow = (width: number) => Math.max(1, Math.floor((width - SHELF_LEFT + SLOT_GAP) / (CARD_W + SLOT_GAP)));
-
-/** One labelled shelf per group; a group longer than a row wraps onto further rows. */
-function shelves(width: number) {
-  const perRow = perShelfRow(width);
-  let top = 0;
-  return projectGroups.map((group) => {
-    const rows = Math.max(1, Math.ceil(group.keys.length / perRow));
-    const shelf = { top, perRow, rows };
-    top += SHELF_LABEL + rows * CARD_H + (rows - 1) * ROW_GAP + SHELF_GAP;
-    return shelf;
-  });
-}
-
-const gridCols = (width: number) => Math.max(1, Math.min(3, Math.floor(width / (CARD_W + 16))));
-
-/** The desk height a mode needs so every card lands on it; 0 when the default desk is enough. */
-function neededHeight(mode: Mode, width: number, introHeight: number) {
-  if (mode !== "groups") return 0;
-  if (!shelvesFit(width)) return introHeight + 40 + Math.ceil(projectOrder.length / gridCols(width)) * (CARD_H + 24);
-  const last = shelves(width).at(-1)!;
-  return last.top + SHELF_LABEL + last.rows * CARD_H + (last.rows - 1) * ROW_GAP;
-}
-
-type Spots = Partial<Record<ProjectKey, [number, number, number]>>;
-
-/** True when a card at (x, y) would touch the intro column, allowing for its lean and a clear margin. */
-const introBlocks = (x: number, y: number, introHeight: number) => x < INTRO_W + 24 && y < introHeight + 32;
-
-/** A fresh scatter: each card at a random open spot, spread apart and clear of the intro, with a random lean. */
-function randomSpots(width: number, height: number, introHeight: number): Spots {
-  const freeW = Math.max(1, width - CARD_W);
-  const freeH = Math.max(1, height - CARD_H);
-  const placed: { x: number; y: number }[] = [];
-  const spots: Spots = {};
-  const order = [...projectOrder].sort(() => Math.random() - 0.5);
-  for (const key of order) {
-    let best: { x: number; y: number } | null = null;
-    let bestScore = -Infinity;
-    // Best of many random tries: the candidate whose card edges sit farthest from every card already down
-    // (negative means overlap), so names stay readable.
-    for (let attempt = 0; attempt < 160; attempt++) {
-      const x = 24 + Math.random() * Math.max(0, freeW - 48);
-      const y = 24 + Math.random() * Math.max(0, freeH - 48);
-      if (introBlocks(x, y, introHeight)) continue;
-      const score = placed.length
-        ? Math.min(...placed.map((spot) => Math.max(Math.abs(spot.x - x) - CARD_W, Math.abs(spot.y - y) - CARD_H)))
-        : Math.random();
-      if (score > bestScore) {
-        bestScore = score;
-        best = { x, y };
-      }
-    }
-    const spot = best ?? { x: SHELF_LEFT, y: 24 };
-    placed.push(spot);
-    spots[key] = [spot.x / freeW, spot.y / freeH, Math.round((Math.random() * 6 - 3) * 10) / 10];
-  }
-  return spots;
-}
-
-function layout(mode: Mode, width: number, height: number, introHeight: number, spots: Spots = {}): Poses {
-  const poses = {} as Poses;
-  const room = Math.max(height, neededHeight(mode, width, introHeight));
-  const freeW = Math.max(0, width - CARD_W);
-  const freeH = Math.max(0, room - CARD_H);
-  const shelfGeometry = shelves(width);
-  const cols = gridCols(width);
-  projectOrder.forEach((key, index) => {
-    let pose: Pose;
-    if (mode === "scatter") {
-      const [fx, fy, r] = spots[key] ?? [0.5, 0.5, 0];
-      // Normalized spots can enter the intro (including its controls) after a
-      // resize. Recheck the current geometry, retaining the deal where safe.
-      let x = clamp(fx * freeW, 24, Math.max(24, freeW - 24));
-      let y = clamp(fy * freeH, 24, Math.max(24, freeH - 24));
-      if (introBlocks(x, y, introHeight)) {
-        const right = INTRO_W + 24;
-        const below = introHeight + 32;
-        if (right <= freeW - 24 && right - x < below - y) x = right;
-        else y = below;
-      }
-      pose = { x, y, r };
-    } else if (mode === "groups" && shelvesFit(width)) {
-      const group = groupIndex(key);
-      const shelf = shelfGeometry[group];
-      const slot = projectGroups[group].keys.indexOf(key);
-      pose = {
-        x: SHELF_LEFT + (slot % shelf.perRow) * (CARD_W + SLOT_GAP),
-        y: shelf.top + SHELF_LABEL + Math.floor(slot / shelf.perRow) * (CARD_H + ROW_GAP),
-        r: 0,
-      };
-    } else if (mode === "groups") {
-      const colW = width / cols;
-      pose = { x: (index % cols) * colW + (colW - CARD_W) / 2, y: introHeight + 40 + Math.floor(index / cols) * (CARD_H + 24), r: 0 };
-    } else {
-      pose = {
-        x: Math.max(SHELF_LEFT, width * 0.66 - CARD_W / 2) + index * 4,
-        y: room * 0.34 - CARD_H / 2 + index * 7,
-        r: (index % 2 ? 1 : -1) * (1 + index * 0.8),
-      };
-    }
-    // Overflow guard: whatever the arrangement, every card stays on the desk.
-    poses[key] = { ...pose, x: clamp(pose.x, 0, freeW), y: clamp(pose.y, 0, freeH) };
-  });
-  return poses;
-}
 
 // Where each card's smudge sits. Fixed per project so the look is stable.
 const smudges: [number, number][] = [
@@ -371,7 +54,7 @@ function App() {
   const [mode, setMode] = useState<Mode>("groups");
   // Each press of Scatter deals a new random arrangement; the page opens sorted by group.
   const [spots, setSpots] = useState<Spots>({});
-  const [poses, setPoses] = useState<Poses>(() => layout("stack", 1180, 760, 360));
+  const [poses, setPoses] = useState<Poses>(() => layout("stack", { width: 1180, height: 760, introWidth: INTRO_W, introHeight: 360 }));
   const [stacking, setStacking] = useState<ProjectKey[]>(projectOrder);
   const [settling, setSettling] = useState(false);
   const [moving, setMoving] = useState<ProjectKey | null>(null);
@@ -411,12 +94,14 @@ function App() {
   } | null>(null);
   const project = selectedProject ? projects[selectedProject] : null;
   const introHeight = () => introRef.current?.offsetHeight ?? 360;
+  const shelfArea = { width: size.width, introWidth: INTRO_W };
+  const geometry = (height: number): DeskGeometry => ({ ...shelfArea, height, introHeight: introHeight() });
   // Keep the supplied window-height desk; grow it when grouped shelves need more room.
   const deskHeight = (m: Mode) => {
     const room = Math.max(720, viewHeight - 72 - 80);
     if (m !== "groups") return room;
     const intro = introHeight();
-    return Math.max(room, Math.max(neededHeight("groups", size.width, intro), intro) + 32);
+    return Math.max(room, Math.max(neededHeight("groups", { ...shelfArea, introHeight: intro }), intro) + 32);
   };
 
   useEffect(() => {
@@ -457,14 +142,14 @@ function App() {
     }
     if (!dealt.current) {
       dealt.current = true;
-      setPoses(layout("stack", size.width, deskHeight("groups"), introHeight()));
-      if (reducedMotion()) setPoses(layout("groups", size.width, deskHeight("groups"), introHeight()));
-      else dealFrame.current = requestAnimationFrame(() => { dealFrame.current = requestAnimationFrame(() => settle(layout("groups", size.width, deskHeight("groups"), introHeight()), 1300)); });
+      setPoses(layout("stack", geometry(deskHeight("groups"))));
+      if (reducedMotion()) setPoses(layout("groups", geometry(deskHeight("groups"))));
+      else dealFrame.current = requestAnimationFrame(() => { dealFrame.current = requestAnimationFrame(() => settle(layout("groups", geometry(deskHeight("groups"))), 1300)); });
       return () => cancelAnimationFrame(dealFrame.current);
     }
     // Grouping can resize the desk. Retarget the cards without cancelling the
     // arrangement transition or its timer; full cleanup belongs to unmount.
-    setPoses(layout(mode, size.width, deskHeight(mode), introHeight(), spots));
+    setPoses(layout(mode, geometry(deskHeight(mode)), spots));
     return () => cancelAnimationFrame(dealFrame.current);
   }, [size, narrow, viewHeight, settle, cancelMotion]);
 
@@ -483,7 +168,7 @@ function App() {
         setSelectedProject(null);
         history.replaceState(null, "", window.location.pathname + window.location.search);
       }
-      setPoses(layout(mode, size.width, deskHeight(mode), introHeight(), spots));
+      setPoses(layout(mode, geometry(deskHeight(mode)), spots));
     };
     media.addEventListener("change", stop);
     return () => media.removeEventListener("change", stop);
@@ -497,11 +182,11 @@ function App() {
   }, [cancelMotion]);
 
   const arrange = (next: Mode) => {
-    const nextSpots = next === "scatter" ? randomSpots(size.width, deskHeight("scatter"), introHeight()) : spots;
+    const nextSpots = next === "scatter" ? randomSpots(geometry(deskHeight("scatter"))) : spots;
     if (next === "scatter") setSpots(nextSpots);
     setMode(next);
     setStacking(projectOrder);
-    settle(layout(next, size.width, deskHeight(next), introHeight(), nextSpots));
+    settle(layout(next, geometry(deskHeight(next)), nextSpots));
   };
 
   const raise = (key: ProjectKey) => setStacking((current) => [...current.filter((k) => k !== key), key]);
@@ -754,25 +439,25 @@ function App() {
             </div>
 
             {!narrow &&
-              shelvesFit(size.width) &&
+              shelvesFit(shelfArea) &&
               projectGroups.map((group, shelf) => (
                 <p
                   className="shelf-label"
                   aria-hidden="true"
                   key={group.id}
                   style={{
-                    transform: `translate(${SHELF_LEFT}px, ${shelves(size.width)[shelf].top}px)`,
-                    width: perShelfRow(size.width) * (CARD_W + SLOT_GAP) - SLOT_GAP,
+                    transform: `translate(${shelfLeft(shelfArea)}px, ${shelves(shelfArea)[shelf].top}px)`,
+                    width: perShelfRow(shelfArea) * (CARD_W + SLOT_GAP) - SLOT_GAP,
                   }}
                 >
                   {group.title}
                 </p>
               ))}
 
-            {!narrow && shelvesFit(size.width) && (() => {
+            {!narrow && shelvesFit(shelfArea) && (() => {
               // The space under the intro, beside the shelves, shows a wordless picture of the hovered project.
               const top = introHeight() + 28;
-              const height = neededHeight("groups", size.width, introHeight()) - top;
+              const height = neededHeight("groups", { ...shelfArea, introHeight: introHeight() }) - top;
               const Diagram = preview ? previews[preview] : IdlePreview;
               return (
                 <div

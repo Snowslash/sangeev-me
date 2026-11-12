@@ -23,11 +23,15 @@ test('local preview serves exact built bytes with the existing policy and real 4
     const head = await fetch(origin, { method: 'HEAD' });
     assert.equal(head.status, 200);
     assert.equal(await head.text(), '');
-    const asset = readdirSync(new URL('../docs/assets/', import.meta.url)).find(p => p.endsWith('.js'));
-    const response = await fetch(`${origin}/assets/${asset}`);
-    assert.equal(response.status, 200);
-    assert.match(response.headers.get('content-type'), /javascript/);
-    assert.deepEqual(Buffer.from(await response.arrayBuffer()), readFileSync(new URL(`../docs/assets/${asset}`, import.meta.url)));
+    const assets = readdirSync(new URL('../docs/assets/', import.meta.url));
+    assert.ok(assets.some(asset => asset.endsWith('.js')) && assets.some(asset => asset.endsWith('.css')));
+    for (const asset of assets) {
+      const response = await fetch(`${origin}/assets/${asset}`);
+      assert.equal(response.status, 200);
+      if (asset.endsWith('.js')) assert.match(response.headers.get('content-type'), /javascript/);
+      if (asset.endsWith('.css')) assert.match(response.headers.get('content-type'), /text\/css/);
+      assert.deepEqual(Buffer.from(await response.arrayBuffer()), readFileSync(new URL(`../docs/assets/${asset}`, import.meta.url)), asset);
+    }
     for (const route of ['/missing', '/assets/', '/%2e%2e%2fpackage.json', '/_headers']) {
       const response = await fetch(origin + route);
       assert.equal(response.status, 404, route);

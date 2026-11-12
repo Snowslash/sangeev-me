@@ -53,15 +53,19 @@ Local cards and their `#project` deep links stay in this preview. **Open project
 
 Try grouped/Scatter/Stack layouts, dragging and arrow-key nudges, Enter to open, Tab/Shift-Tab within the detail, and Escape/Put down to return. Reduced-motion preferences disable the motion. There are no clinical inputs or live simulations in these homepage specimens.
 
-The optional browser regression runner uses an **already-installed** Playwright package rather than adding a site dependency:
+The reproducible browser gate uses the exact **development-only** Playwright version in the lockfile and its matching Chromium. No host-specific npm or browser path is needed:
 
 ```bash
-PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs \
-CHROMIUM_PATH=/absolute/path/to/chromium \
-node scripts/card-desk-browser.mjs
+npm ci
+npm run browser:install
+npm run check:browser
 ```
 
-Evidence is written to ignored `.cache/card-desk-review/` (override with `CARD_DESK_EVIDENCE`). It checks the emitted artifact across desktop, tablet, phone and short viewports, both themes, all six modal journeys, keyboard and pointer interaction, hash navigation, reduced motion, CSP and no-JavaScript links. Run one browser/build job at a time within the host's existing resource limits. Production publication requires an explicitly authorised push to `main` and independent verification of the resulting Worker deployment.
+Chromium is installed inside ignored `node_modules/playwright-core/.local-browsers/`; rerun `browser:install` after a clean dependency install. CI installs the Linux system prerequisites on its disposable runner with `npm run browser:install -- --with-deps`. Local installs do not alter system packages. These npm scripts target the project's Linux/POSIX development and CI environment.
+
+`npm run check` runs the Node suite, TypeScript/build and post-build HTML/HTTP contracts. `npm run check:browser` adds all five browser runners **serially**, against the emitted `docs/` artifact through the strict-header loopback server. It covers collision/layout, arrangement completion/cancellation, resize during movement, close/reopen, hash Back/Forward, focus return, reduced motion, dragging, native touch scrolling, theme persistence, all six decorative previews and no-JavaScript links. `npm run test:browser` reruns just the browser gates after a build; it does not rebuild stale output. CI also verifies that rebuilding leaves the committed `docs/` tree unchanged and uploads the browser evidence on success or failure.
+
+Evidence goes to ignored `.cache/card-desk-review/`, `.cache/card-desk-motion/`, `.cache/scatter-collision/`, `.cache/card-desk-touch/` and `.cache/card-previews/`. Each contains a `results.json` report; the applicable runners also save screenshots. For one runner, use `PLAYWRIGHT_BROWSERS_PATH=0 node scripts/<runner>.mjs`, optionally setting `CARD_DESK_EVIDENCE` to a **separate** destination. Do not set a shared `CARD_DESK_EVIDENCE` for the aggregate command, since each runner writes `results.json`. `CHROMIUM_PATH` remains an explicit diagnostic override, not the default CI browser. Run one browser/build job at a time within the host's existing resource limits. Production publication requires an explicitly authorised push to `main` and independent verification of the resulting Worker deployment.
 
 Local verification (2026-10-15): the initial integration had a clean `npm ci` and full audit with zero findings. After restoring the ZIP copy, `npm run check` passed **36 tests**, TypeScript and the production build; the emitted-HTML copy and Glassbox contracts also passed (8 tests). Chromium reran **72 project-dialog journeys** across six viewports (320×568, 390×844, 768×1024, 1024×420, 1280×720 and 1440×1000), each in both themes, now checking the rendered introduction, descriptions, taglines, evidence labels and source footer against the ZIP fixture. Keyboard trapping/return, rapid hash changes, arrangement, dragging, query preservation, persisted theme and reduced motion passed. Desktop and 320px no-JavaScript views retain all six links and descriptions without horizontal overflow. No uncaught JavaScript errors, CSP violations or external resource requests occurred in that suite. Fresh copy-restoration evidence is in ignored `.cache/card-desk-copy-restored/`. This is local Chromium evidence, not a full accessibility audit or Safari/device certification.
 
@@ -71,17 +75,17 @@ The package manifest/lockfile, shared archive, theme entrypoint, security policy
 
 The resize effect now preserves an active arrangement transition when changing modes also changes the desk height. Full motion cancellation remains in the unmount, reduced-motion and interaction paths. The settling window allows the full 860ms movement plus the final card's stagger, rather than truncating it at 900ms. The supplied easing, stagger, layouts and CSS are unchanged.
 
-Run `node scripts/card-desk-motion.mjs` with the same Playwright/Chromium environment shown above. It records intermediate computed transforms and natural transition completion for all six cards under Stack, Sort by group and Scatter at 800, 1024 and 1440px. It also exercises rapid keyboard replacement and reduced motion at load and during movement. Fresh verification passed all **54 card transitions**, the **36-test** native check/build and the existing **72 dialog journeys**. Evidence: `.cache/card-desk-motion-green/` and `.cache/card-desk-motion-regression/`; failed before-fix and immutable-ZIP comparison captures are retained separately.
+Run `PLAYWRIGHT_BROWSERS_PATH=0 node scripts/card-desk-motion.mjs` after `npm run browser:install`. It records intermediate computed transforms and natural transition completion for all six cards under Stack, Sort by group and Scatter at 800, 1024 and 1440px. It also exercises rapid keyboard replacement and reduced motion at load and during movement. Fresh verification passed all **54 card transitions**, the **36-test** native check/build and the existing **72 dialog journeys**. Evidence: `.cache/card-desk-motion-green/` and `.cache/card-desk-motion-regression/`; failed before-fix and immutable-ZIP comparison captures are retained separately.
 
 The Scatter/resize handling revalidates normalized card positions against the current intro area (which contains the arrangement controls), moving only colliding poses to the nearest available side or below it. A 24px desk inset retains room for the supplied lean. The random deal, motion, supplied artwork/copy, group and stack layouts are unchanged.
 
-Run `node scripts/scatter-collision.mjs` with the same existing Playwright environment. Seed 29 reproduces the original control collision on Scatter at 1440px followed by resize to 800px. The candidate checks resize/repeated arrangement sequences at 1440, 800 and 768px in both verified themes, real non-forced control clicks, rotated Scatter card bounds and control hit-testing. Results go to `.cache/scatter-collision/` or `CARD_DESK_EVIDENCE`. This regression verifies the local build; publication and live-site verification are separate gates.
+Run `PLAYWRIGHT_BROWSERS_PATH=0 node scripts/scatter-collision.mjs` after `npm run browser:install`. Seed 29 reproduces the original control collision on Scatter at 1440px followed by resize to 800px. The candidate checks resize/repeated arrangement sequences at 1440, 800 and 768px in both verified themes, real non-forced control clicks, rotated Scatter card bounds and control hit-testing. Results go to `.cache/scatter-collision/` or `CARD_DESK_EVIDENCE`. This regression verifies the local build; publication and live-site verification are separate gates.
 
 ### Touch input verification
 
 Release review caught a desk-wide `touch-action: none` rule that blocked native scrolling above the narrow-layout breakpoint. Gesture capture is now confined to draggable cards; the surrounding desk and introduction retain native scrolling and zoom. The regression first reproduced a non-scrolling swipe, then passed at 768, 1024 and 844px widths with touch emulation. Touch dragging and tapping a card still work. The native check now has **37 tests**. This is Chromium touch-input evidence, not a physical-device Safari claim.
 
-Run `node scripts/card-desk-touch.mjs` with the same Playwright/Chromium environment shown above. Results go to `.cache/card-desk-touch/`, or `CARD_DESK_EVIDENCE` when set. The modal browser checks also verify the header's actual inert ancestor and restored focusability, rather than checking an attribute on the wrong element.
+Run `PLAYWRIGHT_BROWSERS_PATH=0 node scripts/card-desk-touch.mjs` after `npm run browser:install`. Results go to `.cache/card-desk-touch/`, or `CARD_DESK_EVIDENCE` when set. The modal browser checks also verify the header's actual inert ancestor and restored focusability, rather than checking an attribute on the wrong element.
 
 ### Supplied wording and publication checks
 
@@ -100,15 +104,28 @@ The approved `sangeev.me-homepage-claude-2.zip` adds a decorative SVG preview be
 
 The integration keeps the supplied footer/desk spacing, dark paper surface (`#1d4b47`), close icon and slight held-card rotation as page-local presentation choices. It preserves the maintained skip link, modal focus/scroll handling, touch scrolling, query/hash behaviour, timer cleanup and complete staggered card transitions. Short-window modal clearance and non-shrinking detail sections remain in place. The shared package, dependency lockfile, security headers and sibling projects are unchanged. Reduced motion disables the preview loops both at load and when the preference changes.
 
-`tests/card-previews.test.mjs` pins the artwork and preview CSS to the approved archive (SHA-256 `1fe4062891024f2b12ee05da68d1fe69bf332386173e66319de02facfeb7ba81`). Run `node scripts/card-previews-browser.mjs` with the same Playwright/Chromium environment above to check actual changes between frames, natural continuation into a second cycle, keyboard activation and static reduced-motion diagrams. The arrangement runner excludes only the approved decorative previews from its normal-motion completion check; reduced-motion checks still cover the entire page.
+`tests/card-previews.test.mjs` pins the artwork and preview CSS to the approved archive (SHA-256 `1fe4062891024f2b12ee05da68d1fe69bf332386173e66319de02facfeb7ba81`). Run `PLAYWRIGHT_BROWSERS_PATH=0 node scripts/card-previews-browser.mjs` after `npm run browser:install` to check actual changes between frames, natural continuation into a second cycle, keyboard activation and static reduced-motion diagrams. The arrangement runner excludes only the approved decorative previews from its normal-motion completion check; reduced-motion checks still cover the entire page.
 
 Local integration verification: `npm run check` passed 48 tests, TypeScript and the production build. Browser checks passed all six looping previews, 72 project-dialog journeys in both themes, 54 natural card transitions and three touch-scroll/drag/tap scenarios. No uncaught errors, CSP violations or external resource requests were observed in the preview and dialog suites. Evidence is under ignored `.cache/animated-previews/`. This is local Chromium verification, not deployment or physical-device/Safari certification.
+
+### Catalogue, layout and lifecycle ownership
+
+`src/projects.ts` owns the six project records, group membership and reading order. `src/EvidencePanel.tsx` owns the static specimen markup. Neither owns interaction state or persistence. The literal copy/artwork contracts remain; `tests/catalogue.test.mjs` additionally compares every catalogue field and the complete rendered specimen HTML with the pre-refactor revision recorded in its fixture.
+
+`src/desk-layout.ts` owns pure shelf, stack and scatter geometry. Its inputs are explicit desk content-box width/height and intro width/height in CSS pixels. `randomSpots(geometry, rng)` accepts a deterministic random source for tests and defaults to `Math.random` in production. The supplied random comparator, attempt count, call order, normalized positions, lean and fallback remain unchanged; this is not a new shuffle algorithm. Unit tests cover exact small/wide poses, shelf-fit boundaries, intro collision retargeting, overflow, input preservation and complete seeded deals/resize poses, including RNG consumption.
+
+`App.tsx` still owns DOM measurements, motion timers/frames, drag inertia, selected/preview state, hash navigation, body scroll locking and focus restoration. Their effects and cleanup remain together: a controller extraction would move those coupled references without removing the coupling, so this refactor deliberately stops at the independently testable boundaries. No generic hook framework or extra storage is introduced. Rollback is the local refactor commit's inverse (including its generated `docs/` files); there is no migration or feature flag to unwind.
+
+The homepage uses a custom `section role="dialog"`, **not** `HTMLDialogElement`. Browser gates therefore exercise real Escape/Put down/backdrop interactions, interrupted close, same-card reopening and hash/history transitions. The existing native-close queue tests for `project-pages/shared/ProjectPage.tsx` remain separate; neither that template nor any consumer is changed or propagated. Browser evidence is Chromium desktop/touch emulation, not physical-device Safari or assistive-technology certification.
 
 ## Project layout
 
 The six project-page bodies share a checked source template in [`project-pages/`](project-pages/README.md). It is maintainer tooling, not part of the homepage bundle or the shared estate UI package. Changes are copied explicitly into the separately tested and deployed project repositories; updating this repository alone does not update those sites.
 
-- `src/App.tsx` — six-project Card Desk and preserved evidence specimens, composed with package-owned estate primitives
+- `src/App.tsx` — Card Desk composition and interaction lifecycle, composed with package-owned estate primitives
+- `src/projects.ts` — catalogue, group membership and reading order
+- `src/EvidencePanel.tsx` — preserved static evidence specimens
+- `src/desk-layout.ts` — pure layout/scatter calculations with explicit dimensions and injectable RNG
 - `src/Previews.tsx` — supplied decorative project diagrams and idle illustration
 - `src/styles.css` — page-specific paper desk and modal composition; shared identity and full-bleed chrome come from `@sangeev/estate-ui`
 - `vendor/sangeev-estate-ui-2.0.0-alpha.7.tgz` — exact vendored `@sangeev/estate-ui` contract artifact

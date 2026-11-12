@@ -1,0 +1,96 @@
+{
+  "base": "747706b9a757d9f3db8457ae4886b5a13a00ecaa",
+  "appSha256": "1e3c459614ad271eef169cc0744ec2e3c10a5946fe4d1c97513da8201dcb354d",
+  "projects": {
+    "opnotes": {
+      "name": "Operation Note Generator",
+      "description": "Pick a procedure, fill in a few fields, and get a plain-text operation note to check and copy. Covers general surgery and trauma and orthopaedics.",
+      "href": "https://opnotes.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Operation Note Generator",
+      "tagline": "Plain-text operation note drafts"
+    },
+    "scratchpad": {
+      "name": "Clinical Shift Scratchpad",
+      "description": "A quick list for ward jobs during a shift. It stays on your device and clears itself when you’re done.",
+      "href": "https://scratchpad.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Clinical Shift Scratchpad",
+      "tagline": "A ward-job list for one shift"
+    },
+    "aligned": {
+      "name": "AlignEd",
+      "description": "Keeps your teaching plans, feedback and reflections together, then exports them for your portfolio.",
+      "href": "https://aligned.sangeev.me",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: AlignEd",
+      "tagline": "Teaching evidence, kept together"
+    },
+    "casebook": {
+      "name": "Casebook",
+      "description": "Turns your surgical logbook export into charts you can filter, and shows the exact entries behind every number.",
+      "href": "https://casebook.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Casebook",
+      "tagline": "Your surgical logbook, as charts"
+    },
+    "parallax": {
+      "name": "Parallax",
+      "description": "Practise reading X-rays: compare two views of the same wire, then see in 3D where it really lies.",
+      "href": "https://parallax.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Parallax",
+      "tagline": "Learn to read X-ray views"
+    },
+    "glassbox": {
+      "name": "Glassbox",
+      "description": "Predict what happens, watch a recorded physiology experiment, then see what changed and why.",
+      "href": "https://glassbox.sangeev.me/",
+      "action": "Open project ↗",
+      "ariaLabel": "Open project: Glassbox",
+      "tagline": "Predict, then watch the physiology"
+    }
+  },
+  "order": [
+    "opnotes",
+    "scratchpad",
+    "aligned",
+    "casebook",
+    "parallax",
+    "glassbox"
+  ],
+  "groups": [
+    {
+      "id": "clinical-workflow",
+      "title": "Clinical workflow",
+      "keys": [
+        "opnotes",
+        "scratchpad"
+      ]
+    },
+    {
+      "id": "portfolio",
+      "title": "Portfolio",
+      "keys": [
+        "aligned",
+        "casebook"
+      ]
+    },
+    {
+      "id": "labs",
+      "title": "Physiology and imaging labs",
+      "keys": [
+        "parallax",
+        "glassbox"
+      ]
+    }
+  ],
+  "evidence": {
+    "opnotes": "<div class=\"hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">What you fill in</span><div class=\"op-facts\"><div class=\"op-fact\"><small>Finding</small><strong>Purulent fluid</strong></div><div class=\"op-fact\"><small>Packing</small><strong>Ribbon gauze packing</strong></div></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">The draft you check</span><pre class=\"note-excerpt\"><strong>Findings:</strong> Purulent fluid encountered.\n<strong>Operation:</strong> Cavity packed with ribbon gauze.</pre></div></div>",
+    "scratchpad": "<div class=\"hinge scratch-hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">A job you jot down</span><div class=\"capture-ticket\"><div class=\"capture-task\">Chase CT</div><div class=\"capture-meta\"><span>urgent</span><span>C7 / Bed 4</span></div></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">How it sits on your list</span><div class=\"active-row\"><span class=\"active-row__priority\">urgent</span><div><strong>Chase CT</strong><small>C7 / Bed 4</small></div><time dateTime=\"18:00\">expires 18:00</time></div></div></div>",
+    "aligned": "<div class=\"hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">Feedback from a session</span><div class=\"confidence-facts\"><div class=\"confidence-change\"><span>Confidence</span><strong>2.5 → 4.0</strong></div><p class=\"feedback-theme\">Theme: <q>More time with suturing</q></p></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">What to change next time</span><p class=\"session-action\"><strong>Allow a longer practical station</strong> and repeat the confidence measure.</p></div></div>",
+    "casebook": "<div class=\"hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">Example filter</span><div class=\"op-facts\"><div class=\"op-fact\"><small>Role</small><strong>Performed</strong></div><div class=\"op-fact\"><small>Month</small><strong>February 2026</strong></div></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">Logbook entries that match</span><div class=\"op-facts\"><div class=\"op-fact\"><small>Source rows 5 and 6</small><strong>Synthetic procedure A</strong></div><p class=\"op-note\">Duplicate retained</p></div></div></div>",
+    "parallax": "<div class=\"hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">First view</span><div class=\"op-facts\"><div class=\"op-fact\"><small>View</small><strong>0°</strong></div><div class=\"op-fact\"><small>Tip</small><strong>Within the outline</strong></div></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">Additional view</span><div class=\"op-facts\"><div class=\"op-fact\"><small>View</small><strong>60°</strong></div><div class=\"op-fact\"><small>Tip</small><strong>Beyond the outline</strong></div></div></div></div>",
+    "glassbox": "<div class=\"hinge\"><div class=\"hinge-cause\"><span class=\"hinge-label\">Before blood loss</span><div class=\"op-facts\"><div class=\"op-fact\"><small>Blood volume</small><strong>5,487 mL</strong></div><div class=\"op-fact\"><small>Mean arterial pressure</small><strong>95.3 mmHg</strong></div></div></div><div class=\"hinge-arrow\" aria-hidden=\"true\">→</div><div class=\"hinge-effect\"><span class=\"hinge-label\">At 550 s</span><div class=\"op-facts\"><div class=\"op-fact\"><small>Blood volume</small><strong>4,685 mL</strong></div><div class=\"op-fact\"><small>Mean arterial pressure</small><strong>94.2 mmHg</strong></div></div></div></div>"
+  }
+}

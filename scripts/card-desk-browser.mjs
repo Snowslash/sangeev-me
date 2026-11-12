@@ -3,8 +3,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createPreviewServer } from './preview.mjs';
 
-// Use an existing Playwright installation; do not add a runtime dependency.
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+// Pinned development-only tooling; no host-specific module path is required.
+import { chromium } from 'playwright';
 const output = path.resolve(process.env.CARD_DESK_EVIDENCE || '.cache/card-desk-review');
 await mkdir(output, { recursive: true });
 const server = await createPreviewServer();
@@ -28,9 +28,10 @@ async function context(options = {}) {
     results.external.push(route.request().url());
     return route.abort();
   });
+  // Accumulate outside the document: reload/hash journeys must not erase failures.
+  await ctx.exposeBinding('recordCspViolation', (_source, violation) => results.csp.push(violation));
   await ctx.addInitScript(() => {
-    window.__violations = [];
-    document.addEventListener('securitypolicyviolation', event => window.__violations.push({ directive: event.violatedDirective, blocked: event.blockedURI }));
+    document.addEventListener('securitypolicyviolation', event => window.recordCspViolation({ directive: event.violatedDirective, blocked: event.blockedURI }));
   });
   const page = await ctx.newPage();
   page.setDefaultTimeout(7000);
@@ -119,7 +120,6 @@ try {
         assert.equal(new URL(page.url()).hash, '', 'closing clears project hash');
         scenario.projects.push({ key, url: urls[i], geometry, keyboard: 'pass' });
       }
-      results.csp.push(...await page.evaluate(() => window.__violations));
       await save();
       await ctx.close();
     }
@@ -174,6 +174,38 @@ try {
   await page.keyboard.press('Escape');
   await closed(page, 'parallax');
   assert.equal(new URL(page.url()).search, '?keep=yes');
+  // Card Desk uses a role=dialog section, not HTMLDialogElement. Exercise its
+  // real Escape/button close path plus hash/history reopening, not a fabricated
+  // native `close` event (the separate project-page template owns that API).
+  for (const close of ['Escape', 'Put down']) {
+    await page.evaluate(() => { location.hash = 'opnotes'; });
+    await page.getByRole('dialog').waitFor();
+    if (close === 'Escape') await page.keyboard.press('Escape');
+    else await page.getByRole('button', { name: 'Put the card down' }).click();
+    assert.equal(await page.getByRole('dialog').getAttribute('data-dropping'), 'true');
+    await page.evaluate(() => { location.hash = ''; });
+    await closed(page, 'opnotes');
+    await first.press('Enter');
+    await page.getByRole('dialog').waitFor();
+    await page.waitForTimeout(650);
+    assert.equal(await page.locator('#held-title').innerText(), 'Operation Note Generator');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'held-title');
+    assert.equal(await page.getByRole('dialog').getAttribute('data-dropping'), null);
+    await page.keyboard.press('Escape');
+    await closed(page, 'opnotes');
+  }
+  // History events change the current selection and its exact focus-return target.
+  await page.evaluate(() => { location.hash = 'aligned'; });
+  await page.waitForFunction(() => document.querySelector('#held-title')?.textContent === 'AlignEd');
+  await page.evaluate(() => { location.hash = 'casebook'; });
+  await page.waitForFunction(() => document.querySelector('#held-title')?.textContent === 'Casebook');
+  await page.goBack();
+  await page.waitForFunction(() => document.querySelector('#held-title')?.textContent === 'AlignEd');
+  await page.goForward();
+  await page.waitForFunction(() => document.querySelector('#held-title')?.textContent === 'Casebook');
+  await page.keyboard.press('Escape');
+  await closed(page, 'casebook');
+  assert.equal(new URL(page.url()).search, '?keep=yes');
   // Shared theme preference survives reload; local preview never rewrites destinations.
   await page.locator('.estate-site-header button').click();
   const toggled = await page.locator('html').getAttribute('data-theme');
@@ -189,8 +221,7 @@ try {
   await page.getByRole('dialog').waitFor();
   await page.keyboard.press('Escape');
   await closed(page, 'opnotes');
-  results.interactionChecks = ['skip', 'arrangements', 'keyboard-nudge', 'drag', 'click-after-drag', 'close', 'backdrop', 'hash-open', 'hash-race', 'query-preserved', 'theme-persistence', 'reduced-motion'];
-  results.csp.push(...await page.evaluate(() => window.__violations));
+  results.interactionChecks = ['skip', 'arrangements', 'keyboard-nudge', 'drag', 'click-after-drag', 'close', 'backdrop', 'hash-open', 'hash-race', 'same-card-close-reopen', 'history-back-forward', 'query-preserved', 'theme-persistence', 'reduced-motion'];
   await ctx.close();
   results.noJavaScript = [];
   for (const width of [1440, 320]) {

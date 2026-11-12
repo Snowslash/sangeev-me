@@ -8,7 +8,7 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const copy = JSON.parse(read('./fixtures/card-desk-copy.json'));
 
 test('Card Desk preserves the supplied project descriptions, taglines and actions', () => {
-  const app = read('../src/App.tsx');
+  const app = read('../src/projects.ts');
   for (const [key, fields] of Object.entries(copy.projects)) {
     const record = app.match(new RegExp(`^  ${key}: \\{([\\s\\S]*?)^  \\},`, 'm'))?.[1] || '';
     for (const [field, value] of Object.entries(fields)) {
@@ -20,7 +20,7 @@ test('Card Desk preserves the supplied project descriptions, taglines and action
 test('Card Desk preserves the supplied introduction and plain-English evidence labels', () => {
   const app = read('../src/App.tsx');
   assert.ok(app.includes(`<p className="lede">${copy.intro}</p>`));
-  const labels = [...app.matchAll(/<span className="hinge-label">([^<]+)<\/span>/g)].map(match => match[1]);
+  const labels = [...read('../src/EvidencePanel.tsx').matchAll(/<span className="hinge-label">([^<]+)<\/span>/g)].map(match => match[1]);
   assert.deepEqual(labels, copy.evidenceLabels);
 });
 

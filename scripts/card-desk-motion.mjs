@@ -4,7 +4,7 @@ import path from 'node:path';
 import { createPreviewServer } from './preview.mjs';
 
 // Frame-level regression: settled screenshots cannot establish animated movement.
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
+import { chromium } from 'playwright';
 const output = path.resolve(process.env.CARD_DESK_EVIDENCE || '.cache/card-desk-motion');
 await mkdir(output, { recursive: true });
 const server = await createPreviewServer(process.env.CARD_DESK_DOCUMENT_ROOT);
@@ -74,7 +74,7 @@ try {
         }
         await save();
       }
-      if (!process.env.CARD_DESK_DOCUMENT_ROOT) {
+      {
         // Real keyboard activation also exercises rapid replacement without a
         // moving card accidentally intercepting a test pointer on the tray.
         for (const name of ['Stack', 'Sort by group', 'Stack']) {
@@ -87,6 +87,25 @@ try {
         // Approved preview loops are independent of finite card arrangements.
         // Reduced-motion checks below still cover every animation on the page.
         assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running' && !animation.effect.target.closest('.preview-art')).length), 0);
+        // A viewport resize during movement must retarget the active transition,
+        // then finish at the same geometry as a fresh arrangement at that width.
+        await page.getByRole('button', { name: 'Sort by group', exact: true }).focus();
+        await page.keyboard.press('Enter');
+        await page.waitForTimeout(120);
+        assert.equal(await page.locator('.project-selector[data-settling]').count(), 6);
+        const resizedWidth = width === 800 ? 1440 : 800;
+        await page.setViewportSize({ width: resizedWidth, height: 700 });
+        await page.waitForTimeout(120);
+        const during = await page.locator('.project-selector').evaluateAll(cards => cards.map(card => ({ key: card.dataset.project, computed: getComputedStyle(card).transform, target: new DOMMatrix(card.style.transform).toString() })));
+        assert.ok(during.some(card => card.computed !== card.target), 'resize retains intermediate movement');
+        await page.waitForFunction(() => !document.querySelector('.project-selector[data-settling]'));
+        const after = await page.locator('.project-selector').evaluateAll(cards => cards.map(card => ({ key: card.dataset.project, transform: getComputedStyle(card).transform })));
+        await page.getByRole('button', { name: 'Sort by group', exact: true }).press('Enter');
+        await page.waitForFunction(() => !document.querySelector('.project-selector[data-settling]'));
+        assert.deepEqual(await page.locator('.project-selector').evaluateAll(cards => cards.map(card => ({ key: card.dataset.project, transform: getComputedStyle(card).transform }))), after);
+        results.scenarios.at(-1).resizeDuringMotion = { from: width, to: resizedWidth, during, after };
+        await page.getByRole('button', { name: 'Stack', exact: true }).press('Enter');
+        await page.waitForFunction(() => !document.querySelector('.project-selector[data-settling]'));
         await page.getByRole('button', { name: 'Sort by group', exact: true }).focus();
         await page.keyboard.press('Enter');
         await page.waitForTimeout(100);
@@ -95,15 +114,14 @@ try {
         await page.waitForTimeout(100);
         assert.equal(await page.locator('.project-selector[data-settling]').count(), 0);
         assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0);
-        // Start from groups: random scatter can cover controls in the supplied design.
-        // An immutable ZIP comparison checks normal motion, not our added lifecycle guards.
+        // Start from the default grouped arrangement under reduced motion.
         await page.reload();
         await page.locator('.project-selector').first().waitFor();
         await page.getByRole('button', { name: 'Stack', exact: true }).click();
         await page.waitForTimeout(100);
         assert.equal(await page.locator('.project-selector[data-settling]').count(), 0);
         assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0);
-        results.scenarios.at(-1).lifecycle = ['rapid-keyboard-replacement', 'natural-completion', 'reduced-motion-during-arrangement', 'reduced-motion-at-load'];
+        results.scenarios.at(-1).lifecycle = ['rapid-keyboard-replacement', 'natural-completion', 'resize-during-motion', 'reduced-motion-during-arrangement', 'reduced-motion-at-load'];
       }
     } finally {
       await context.close();
